@@ -1,10 +1,10 @@
 <template>
-  <el-row :gutter="16" v-infinite-scroll="loadMore">
+  <el-row :gutter="16" v-infinite-scroll="emitLoadMore">
     <el-col v-for="video in videos" :key="video.aid" :xs="24" :md="{ span: 10, offset: 2 }" :lg="{ span: 8, offset: 0 }">
       <el-card @click="handleCardClick($event, video)" :body-style="{ padding: '10px' }" style="margin-bottom: 10px;">
         <div class="image-wrapper">
           <img v-if="!video.hidden || !video.hidden.is_hidden" :src="getVideoCover(video.aid)" class="image" />
-          <div v-else class="banned-info">很抱歉，{{ video.hidden.reason }}</div>
+          <div v-else class="banned-info">很抱歉，{{ video.hidden.reason }},操作人:{{ video.hidden.operator_name }}</div>
           <span class="play-count">{{ video.data.view || '0' }}播放</span>
         </div>
         <div style="padding: 14px">
@@ -20,19 +20,18 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, defineProps, defineEmits } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
-import axios from 'axios'
 
 const props = defineProps({
   videos: {
     type: Array,
     required: true
   },
-  type: {
-    type: String,
-    required: true
+  hasMore: {
+    type: Boolean,
+    default: true
   }
 });
 
@@ -41,7 +40,6 @@ const store = useStore();
 const apiUrl = computed(() => store.state.apiUrl);
 
 const getVideoCover = aid => `${apiUrl.value}/api/video/cover/${aid}`;
-
 
 function handleCardClick(event, video) {
   const card = event.currentTarget;
@@ -63,38 +61,11 @@ function handleCardClick(event, video) {
   });
 }
 
-let isLoading = ref(false);
-const currentAid = ref(1);
-const isAllDataLoaded = ref(false);
+const emits = defineEmits(['load-more']);
 
-async function loadMore() {
-  if (isLoading.value) return;
-  if (isAllDataLoaded.value) return;
-
-  isLoading.value = true;
-
-  let endpoint = props.type === 'home' ? '/api/video/list' : '/api/video/hot-list';
-
-  try {
-    const response = await axios.get(`${apiUrl.value}${endpoint}`, {
-      params: {
-        start: currentAid.value,
-        count: 10
-      }
-    });
-
-    props.videos.push(...response.data.data);
-
-    if (response.data.length < 10) {
-      isLoading.value = false;
-      isAllDataLoaded.value = true;
-    } else {
-      currentAid.value += 10;
-      isLoading.value = false;
-    }
-  } catch (error) {
-    console.error("获取视频错误:", error);
-    isLoading.value = false;
+function emitLoadMore() {
+  if (props.hasMore) {
+    emits('load-more');
   }
 }
 </script>
