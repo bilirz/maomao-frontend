@@ -1,5 +1,5 @@
 <template>
-  <el-row :gutter="16">
+  <el-row :gutter="16" v-infinite-scroll="loadMore">
     <el-col v-for="video in videos" :key="video.aid" :xs="24" :md="{ span: 10, offset: 2 }" :lg="{ span: 8, offset: 0 }">
       <el-card @click="handleCardClick($event, video)" :body-style="{ padding: '10px' }" style="margin-bottom: 10px;">
         <div class="image-wrapper">
@@ -20,13 +20,18 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
+import axios from 'axios'
 
 const props = defineProps({
   videos: {
     type: Array,
+    required: true
+  },
+  type: {
+    type: String,
     required: true
   }
 });
@@ -57,6 +62,41 @@ function handleCardClick(event, video) {
     }
   });
 }
+
+let isLoading = ref(false);
+const currentAid = ref(1);
+const isAllDataLoaded = ref(false);
+
+async function loadMore() {
+  if (isLoading.value) return;
+  if (isAllDataLoaded.value) return;
+
+  isLoading.value = true;
+
+  let endpoint = props.type === 'home' ? '/api/video/list' : '/api/video/hot-list';
+
+  try {
+    const response = await axios.get(`${apiUrl.value}${endpoint}`, {
+      params: {
+        start: currentAid.value,
+        count: 10
+      }
+    });
+
+    props.videos.push(...response.data.data);
+
+    if (response.data.length < 10) {
+      isLoading.value = false;
+      isAllDataLoaded.value = true;
+    } else {
+      currentAid.value += 10;
+      isLoading.value = false;
+    }
+  } catch (error) {
+    console.error("获取视频错误:", error);
+    isLoading.value = false;
+  }
+}
 </script>
 
 <style>
@@ -79,6 +119,11 @@ function handleCardClick(event, video) {
   align-items: center;
 }
 
+
+.el-card {
+  position: relative;
+  overflow: hidden; 
+}
 
 .ripple {
   position: absolute;

@@ -2,10 +2,10 @@
   <div>
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="首页" name="home">
-        <VideoGrid :videos="videos" v-if="activeName === 'home'" @load-more="() => loadMore('home')"/>
+        <VideoGrid :videos="videos" :type="home" v-if="activeName === 'home'" @load-more="() => loadMore('home')"/>
       </el-tab-pane>
       <el-tab-pane label="热门" name="hot">
-        <VideoGrid :videos="videos" v-if="activeName === 'hot'" @load-more="() => loadMore('hot')"/>
+        <VideoGrid :videos="videos" :type="hot" v-if="activeName === 'hot'" @load-more="() => loadMore('hot')"/>
       </el-tab-pane>
     </el-tabs>
   </div>
