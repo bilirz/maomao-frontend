@@ -2,10 +2,10 @@
   <div>
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="首页" name="home">
-        <VideoGrid :videos="videos" :type="home" v-if="activeName === 'home'" @load-more="() => loadMore('home')"/>
+        <VideoGrid :videos="videos" :hasMore="hasMoreVideos" v-if="activeName === 'home'" @load-more="() => loadMore('home')"/>
       </el-tab-pane>
       <el-tab-pane label="热门" name="hot">
-        <VideoGrid :videos="videos" :type="hot" v-if="activeName === 'hot'" @load-more="() => loadMore('hot')"/>
+        <VideoGrid :videos="videos" :hasMore="hasMoreVideos" v-if="activeName === 'hot'" @load-more="() => loadMore('hot')"/>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -13,7 +13,6 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import axios from 'axios'
 import VideoGrid from './VideoGrid.vue';
@@ -21,7 +20,7 @@ import VideoGrid from './VideoGrid.vue';
 const store = useStore();
 const apiUrl = computed(() => store.state.apiUrl);
 
-const router = useRouter();
+const hasMoreVideos = ref(true);
 
 const activeName = ref('home');
 const videos = ref([]);
@@ -39,6 +38,7 @@ function resetVideosData() {
   videos.value = [];
   currentAid.value = 1;
   isAllDataLoaded.value = false;
+  hasMoreVideos.value = true
 }
 
 async function loadMore(type = 'home') {
@@ -51,7 +51,9 @@ async function loadMore(type = 'home') {
     const response = await axios.get(`${apiUrl.value}${endpoint}`, {
       params: { start: currentAid.value, count: 10 }
     });
-
+    if (response.data.hasMore === false) {
+      hasMoreVideos.value = false;
+    }
     videos.value.push(...response.data.data);
     if (response.data.length < 10) {
       isAllDataLoaded.value = true;
