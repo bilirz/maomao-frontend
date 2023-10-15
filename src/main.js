@@ -6,7 +6,6 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import 'element-plus/theme-chalk/display.css'
-import Ripple from 'vue-ripple-directive';
 
 store.dispatch('fetchSessionData').then(() => {
   const app = createApp(App);
@@ -14,7 +13,6 @@ store.dispatch('fetchSessionData').then(() => {
   app.use(store);
   app.use(router);
   app.use(ElementPlus);
-  app.directive('ripple', Ripple);
 
   // 全局注册element-plus icon
   for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
