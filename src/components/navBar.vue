@@ -19,6 +19,7 @@
       <el-menu-item>积分：{{ sessionData?.points || 0 }}</el-menu-item>
       <el-menu-item @click="signOut">退出登录</el-menu-item>
     </el-sub-menu>
+    <el-menu-item v-if="sessionData?.status === 1" index="/admin/hidevideo">审核</el-menu-item>
   </el-menu>
 </template>
 
