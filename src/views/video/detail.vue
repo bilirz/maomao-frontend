@@ -1,15 +1,26 @@
 <template>
   <div>
-    <mmCard v-if="videoInfo" :title="videoInfo.title" style="margin-bottom: 10px;">
+    <mmCard v-if="videoInfo" :title="`${videoInfo.aid}: ${videoInfo.title}`" style="margin-bottom: 10px;">
       <div class="video-container">
         <video ref="videoElement" class="video-js vjs-default-skin" controls width="600"></video>
       </div>
-      <el-button @click="toggleLike">点赞 ({{ videoInfo.data.like }})</el-button>
+    </mmCard>
+    <mmCard v-if="videoInfo" title="详情" style="margin-bottom: 10px;" class="mm-detail-card">
+      <div class="video-info">
+        <div><el-button @click="toggleLike">点赞 ({{ videoInfo.data.like }})</el-button></div>
+        <div v-if="videoInfo.description">{{ videoInfo.description }}</div>
+        <div v-if="videoInfo.origin"><strong>搬运于:</strong> {{ videoInfo.origin }}</div>
+        <div><strong>发布时间:</strong> {{ formatTimestamp(videoInfo.time) }}</div>
+        <div v-if="formattedTags.length">
+          <strong>标签:</strong> 
+          <el-tag v-for="tag in formattedTags" :key="tag" style="margin-left: 10px">{{ tag }}</el-tag>
+        </div>
+      </div>
     </mmCard>
     <mmCard title="评论">
       <el-input type="textarea" v-model="newComment" placeholder="添加评论..." maxlength="200" show-word-limit></el-input>
+      <div class="margin-div"></div>
       <el-button @click="postComment">提交</el-button>
-      <div class="padding-div"></div>
       <div v-for="comment in comments" :key="comment._id" class="single-comment">
         <div>
           <!-- 显示评论楼层 -->
@@ -19,7 +30,7 @@
             <p>{{ comment.content }}</p>
             <small class="floor-number">发布于{{ formatTimestamp(comment.time) }}</small>
           </el-card>
-          <div class="padding-div"></div>
+          <div class="margin-div"></div>
           <el-button @click="showReplyBox(comment._id)">回复</el-button>
         </div>
 
@@ -35,7 +46,7 @@
         
         <div v-if="commentStates[comment._id]?.showReply" class="reply-box">
           <el-input type="textarea" v-model="commentStates[comment._id].replyContent" placeholder="回复..." maxlength="100" show-word-limit></el-input>
-          <div class="padding-div"></div>
+          <div class="margin-div"></div>
           <el-button @click="postReply(comment._id)">提交回复</el-button>
         </div>
       </div>
@@ -68,11 +79,30 @@ if (parseInt(aid) > 116) {
     videoUrl = `${cosUrl.value}/videos/${aid}/index.m3u8`;
 }
 const posterUrl = `${cosUrl.value}/covers/${aid}.jpg`;
-const { formatTimestamp } = useFormat();
+const { formatTimestamp, getCategoryByValue } = useFormat();
 
 const videoElement = ref(null);
 const videoInfo = ref(null);
+const lastLikeClickTime = ref(0);
+
 let player;
+
+const formattedTags = computed(() => {
+  if (videoInfo.value && videoInfo.value.tags) {
+    let newTags = [];
+
+    if (videoInfo.value.source) {
+      newTags.push(videoInfo.value.source);
+    }
+    if (getCategoryByValue(videoInfo.category)) {
+      newTags.push(getCategoryByValue(videoInfo.value.category));
+    }
+
+    return [...newTags, ...videoInfo.value.tags];
+  }
+  return [];
+});
+
 
 const incrementViewCount = async () => {
   await axios.post(`${apiUrl.value}/api/video/add/view/${aid}`);
@@ -103,6 +133,15 @@ const loadVideoAndCover = async () => {
 };
 
 const toggleLike = async () => {
+  const currentTime = Date.now();
+  if (currentTime - lastLikeClickTime.value < 1000) {
+    ElMessage({
+      message: '请稍等一秒再点击！',
+      type: 'warning',
+    });
+    return;
+  }
+  lastLikeClickTime.value = currentTime;
   try {
     const response = await axios.post(`${apiUrl.value}/api/video/toggle/like/${aid}`);
     videoInfo.value.data.like += response.data.likes;
@@ -241,8 +280,8 @@ onMounted(async () => {
   color: #555;
 }
 
-.padding-div {
-  padding: 10px;
+.margin-div {
+  margin: 10px;
 }
 
 
@@ -276,4 +315,22 @@ onMounted(async () => {
   color: #888;
   margin-right: 5px;
 }
+
+.video-info div {
+  margin-bottom: 15px;
+}
+
+.video-in strong {
+  color: #333;
+  margin-right: 8px;
+}
+
+.el-tag {
+  background-color: #ff8781;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  padding: 5px 15px;
+}
+
 </style>

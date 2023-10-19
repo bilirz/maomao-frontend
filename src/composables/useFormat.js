@@ -10,5 +10,24 @@ export default function useFormat() {
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   }
 
-  return { formatTimestamp };
+  const getCategoryByValue = (value) => {
+    const categories = {
+      100: "游戏",
+      200: "生活",
+      300: "知识",
+      400: "科技",
+      500: "音乐",
+      600: "鬼畜",
+      700: "动画",
+      800: "时尚",
+      900: "舞蹈",
+      1000: "娱乐",
+      1100: "美食",
+      1200: "动物"
+    };
+
+    return categories[value] || "未知分区"; // 如果数字不在列表中，则返回"未知分区"
+  }
+
+  return { formatTimestamp, getCategoryByValue };
 }

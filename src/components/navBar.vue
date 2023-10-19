@@ -31,7 +31,7 @@ import axios from 'axios';
 const store = useStore();
 const apiUrl = computed(() => store.state.apiUrl);
 const sessionData = computed(() => store.state.sessionData);
-const hasCheckedIn = ref(false);  // 初始化为false
+const hasCheckedIn = ref(false);
 
 const signOut = () => {
   axios.post(`${apiUrl.value}/api/user/signout`)
