@@ -131,70 +131,80 @@ const getAuth = () => {
     }, 1000);
   }
 
-
 const submitForm = (formEl) => {
   if (!formEl) return;
 
+  const validatePasswordLength = (password) => {
+    return password.length >= 6;
+  }
+
+  const validatePasswordsMatch = (password, again_password) => {
+    return password === again_password;
+  }
+
+  const validateNameLength = (name) => {
+    return name.length >= 3 && name.length <= 10;
+  }
+
   formEl.validate((valid) => {
-    if (valid) {
-      if (formData.password.length < 6) {
-        ElMessage({
-          message: '错误：密码不能小于6个字符。',
-          type: 'warning',
-        });
-        return;
-      }
-
-      if (formData.password !== formData.again_password) {
-        ElMessage({
-          message: '错误：两次密码输入不一致。',
-          type: 'warning',
-        });
-        return;
-      }
-
-      if (formData.name.length < 3 || formData.name.length > 10) {
-        ElMessage({
-          message: '错误：昵称长度需要在3-10之间。',
-          type: 'warning',
-        });
-        return;
-      }
-
-      axios.post(`${apiUrl.value}/api/user/signup`, {
-        email: formData.email,
-        name: formData.name,
-        password: formData.password
-      })
-      .then(response => {
-        let res = response.data;
-        if (res['state'] === 'succeed') {
-          ElNotification({
-            title: '注册成功！',
-            message: '即将为您跳转到登录页面...',
-            type: 'success',
-          });
-          router.push('/user/signin');
-        } else if (res['state'] === 'error') {
-          ElMessage({
-            message: res['message'],
-            type: 'error',
-          });
-        }
-      }).catch(error => {
-        ElMessage({
-          message: '服务器错误，请稍后再试。',
-          type: 'error',
-        });
-      });
-
-    } else {
+    if (!valid) {
       ElMessage({
         message: '错误：未填必填项',
         type: 'warning',
       });
+      return;
     }
+
+    if (!validatePasswordLength(formData.password)) {
+      ElMessage({
+        message: '错误：密码不能小于6个字符。',
+        type: 'warning',
+      });
+      return;
+    }
+
+    if (!validatePasswordsMatch(formData.password, formData.again_password)) {
+      ElMessage({
+        message: '错误：两次密码输入不一致。',
+        type: 'warning',
+      });
+      return;
+    }
+
+    if (!validateNameLength(formData.name)) {
+      ElMessage({
+        message: '错误：昵称长度需要在3-10之间。',
+        type: 'warning',
+      });
+      return;
+    }
+
+    axios.post(`${apiUrl.value}/api/user/signup`, {
+      email: formData.email,
+      name: formData.name,
+      password: formData.password
+    })
+    .then(response => {
+      let res = response.data;
+      if (res['state'] === 'succeed') {
+        ElNotification({  // TODO: 发送验证链接而不是验证码
+          title: '请确认你注册成功',
+          message: '即将为您跳转到登录页面...',
+          type: 'success',
+        });
+        router.push('/user/signin');
+      } else if (res['state'] === 'error') {
+        ElMessage({
+          message: res['message'],
+          type: 'error',
+        });
+      }
+    }).catch(error => {
+      ElMessage({
+        message: '服务器错误，请稍后再试。',
+        type: 'error',
+      });
+    });
   });
 }
-
 </script>

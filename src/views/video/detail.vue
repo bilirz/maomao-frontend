@@ -58,8 +58,16 @@ const route = useRoute();
 const aid = route.params.aid;
 const store = useStore();
 const apiUrl = computed(() => store.state.apiUrl);
-const videoUrl = `${apiUrl.value}/api/video/${aid}/index.m3u8`;
-// const posterUrl = `${apiUrl.value}/api/video/cover/${aid}`;
+const cosUrl = computed(() => store.state.cosUrl);
+
+
+let videoUrl;
+if (parseInt(aid) > 116) {
+    videoUrl = `${cosUrl.value}/videos/${aid}/${aid}.m3u8`;
+} else {
+    videoUrl = `${cosUrl.value}/videos/${aid}/index.m3u8`;
+}
+const posterUrl = `${cosUrl.value}/covers/${aid}.jpg`;
 const { formatTimestamp } = useFormat();
 
 const videoElement = ref(null);
@@ -205,6 +213,7 @@ onMounted(async () => {
   // 延迟初始化 video.js
   setTimeout(() => {
     player = videojs(videoElement.value, {
+    poster: posterUrl,
     controls: true,
     autoplay: false,
     preload: 'auto',

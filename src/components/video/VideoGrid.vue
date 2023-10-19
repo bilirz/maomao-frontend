@@ -4,7 +4,10 @@
       <el-card @click="handleCardClick($event, video)" :body-style="{ padding: '10px' }" style="margin-bottom: 10px;">
         <div class="image-wrapper">
           <img v-if="!video.hidden || !video.hidden.is_hidden" :src="getVideoCover(video.aid)" class="image" />
-          <div v-else class="banned-info">很抱歉，{{ video.hidden.reason }},操作人:{{ video.hidden.operator_name }}</div>
+          <div v-else class="banned-info">
+            <p>很抱歉，{{ video.hidden.reason }}</p>
+            <p>操作人：{{ video.hidden.operator_name }}</p>
+          </div>
           <span class="play-count">{{ video.data.view || '0' }}播放</span>
         </div>
         <div style="padding: 14px">
@@ -20,7 +23,7 @@
 </template>
 
 <script setup>
-import { computed, ref, defineProps, defineEmits } from 'vue';
+import { computed, defineProps, defineEmits } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 
@@ -37,9 +40,9 @@ const props = defineProps({
 
 const router = useRouter();
 const store = useStore();
-const apiUrl = computed(() => store.state.apiUrl);
+const cosUrl = computed(() => store.state.cosUrl);
 
-const getVideoCover = aid => `${apiUrl.value}/api/video/cover/${aid}`;
+const getVideoCover = aid => `${cosUrl.value}/covers/${aid}.jpg`;
 
 function handleCardClick(event, video) {
   const card = event.currentTarget;

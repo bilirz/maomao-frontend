@@ -4,8 +4,11 @@ import axios from 'axios';
 export default createStore({
   state: {
     sessionData: null,
+    apiUrl: 'http://localhost:5000',
+    cosUrl: 'https://cos-test.bilirz.com',
     // apiUrl: 'https://v.bilirz.com',
-    apiUrl: 'http://localhost:5000'
+    // cosUrl: 'https://cos.bilirz.com',
+    
   },
   mutations: {
     SET_SESSION_DATA(state, data) {

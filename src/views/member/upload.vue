@@ -10,23 +10,23 @@
           @change="onFileChange"
           :auto-upload="false"
           :show-file-list="false"
-          accept="video/mp4,video/avi,video/mov"
+          accept="video/*"
         >
           <el-icon class="el-icon--upload"><upload-filled /></el-icon>
           <div class="el-upload__text">上传</div>
           <template #tip>
             <div class="el-upload__tip">
-                目前支持上传mp4、avi和mov视频，文件大小不能超过100M。
+                文件大小不能超过100M。
             </div>
           </template>
         </el-upload>
         <el-progress :percentage="uploadProgress" v-if="isIndeterminateLoading" />
-        <div v-if="uploadProgress === 100 && isIndeterminateLoading">正在转码...</div>
+        <div v-if="uploadProgress === 100 && isIndeterminateLoading">正在加载...</div>
       </mmCard>
     </div>
 
     <!-- 视频信息填写 -->
-    <div v-else>
+    <div v-else  v-if="!showSuccessResult">
       <mmCard title="填写视频信息">
 
         <!-- 视频信息表单 -->
@@ -93,17 +93,27 @@
             <el-input type="textarea" v-model="formData.description" placeholder="为你的视频添加简介"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="submitVideo">提交</el-button>
+            <el-button type="primary" @click="submitVideo" :disabled="isSubmitting">提交</el-button>
           </el-form-item>
         </el-form>
       </mmCard>
     </div>
+    <el-result v-if="showSuccessResult"
+        icon="success"
+        title="上传成功！"
+        sub-title="视频将在转码后显示"
+    >
+        <template #extra>
+          <el-button type="primary" @click="goBack">返回到主页</el-button>
+        </template>
+    </el-result>
   </div>
 </template>
 
 <script setup>
 import { ref, watchEffect, reactive, toRaw } from 'vue';
 import { useStore } from 'vuex';
+
 import axios from 'axios';
 
 const store = useStore();
@@ -112,6 +122,8 @@ const apiUrl = ref(store.state.apiUrl);
 const showUploader = ref(true);
 const uploadProgress = ref(0);
 const isIndeterminateLoading = ref(false);
+const isSubmitting = ref(false);
+const showSuccessResult = ref(false);
 
 const formData = reactive({
     title: '',
@@ -123,10 +135,6 @@ const formData = reactive({
 
 const onFileChange = async (fileChangeEvent) => {
   const file = fileChangeEvent.raw;
-  if (file && file.type !== 'video/mp4' && file.type !== 'video/avi' && file.type !== 'video/mov') {
-    ElMessage.error('只支持上传mp4格式的视频！');
-    return;
-  }
 
   if (file.size / 1024 / 1024 > 100) {
     ElMessage.error('只支持100M以下的文件');
@@ -186,6 +194,7 @@ watchEffect(() => {
 });
 
 const submitVideo = async () => {
+  isSubmitting.value = true;
   const data = new FormData();
   const rawFormData = toRaw(formData);
 
@@ -199,16 +208,23 @@ const submitVideo = async () => {
     const response = await axios.post(`${apiUrl.value}/api/upload/submit`, data);
     if (response.data.state === 'success') {
       ElMessage.success('上传成功！');
+      showSuccessResult.value = true;
     } else {
       ElMessage.error(response.data.message);
     }
   } catch (error) {
     ElMessage.error('提交失败！');
   }
+  
+};
+
+const goBack = () => {
+  location.reload(true);
+  window.location.href = '/';
 };
 </script>
 
-<style scoped>
+<style>
 .avatar-uploader .avatar {
   width: 100px;
   height: 100px;
@@ -217,10 +233,6 @@ const submitVideo = async () => {
   border-radius: 6px; /* 圆角效果 */
 }
 
-</style>
-
-/* Global Style */
-<style>
 .avatar-uploader .el-upload {
   border: 2px dashed var(--el-border-color);
   border-radius: 8px;

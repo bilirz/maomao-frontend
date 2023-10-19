@@ -50,63 +50,67 @@ const formData = reactive({
 })
 
 const signinForm = ref(null)
+
+const isValidEmail = (email) => {
+  let RegEmail = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+  return RegEmail.test(email);
+}
+
+const isPasswordValid = (password) => {
+  return password.length >= 6;
+}
+
 const submitForm = (formEl) => {
   if (!formEl) return;
 
   formEl.validate((valid) => {
-    if (valid) {
-      let RegEmail = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
-      if (!RegEmail.test(formData.email)) {
-        ElMessage({
-          message: '错误：请输入一个有效的电子邮件地址。',
-          type: 'warning',
-        });
-        return;
-      }
-
-      if (formData.password.length < 6) {
-        ElMessage({
-          message: '错误：密码至少需要6个字符。',
-          type: 'warning',
-        });
-        return;
-      }
-
-      axios.post(`${apiUrl.value}/api/user/signin`, { email: formData.email, password: formData.password })
-      .then(response => {
-        let res = response.data;
-        if (res['state'] === 'succeed') {
-          ElNotification({
-            title: '登录成功！',
-            message: '欢迎回来！',
-            type: 'success',
-          });
-
-          location.reload(true);
-        } else if (res['state'] === 'password_error') {
-          ElMessage({
-            message: '错误：您输入的密码不正确。',
-            type: 'warning',
-          });
-        } else if (res['state'] === 'user_none') {
-          ElMessage({
-            message: '错误：账号不存在。',
-            type: 'warning',
-          });
-        }
-      }).catch(error => {
-        ElMessage({
-          message: '服务器错误，请稍后再试。',
-          type: 'error',
-        });
-      });
-
-    } else {
+    if (!valid) {
       ElMessage({
         message: '错误：请确保填写所有必要的信息。',
         type: 'warning',
       });
+      return;
     }
+
+    if (!isValidEmail(formData.email)) {
+      ElMessage({
+        message: '错误：请输入一个有效的电子邮件地址。',
+        type: 'warning',
+      });
+      return;
+    }
+
+    if (!isPasswordValid(formData.password)) {
+      ElMessage({
+        message: '错误：密码至少需要6个字符。',
+        type: 'warning',
+      });
+      return;
+    }
+
+    axios.post(`${apiUrl.value}/api/user/signin`, { email: formData.email, password: formData.password })
+    .then(response => {
+      let res = response.data;
+      if (res['state'] === 'succeed') {
+        ElNotification({
+          title: '登录成功！',
+          message: '欢迎回来！',
+          type: 'success',
+        });
+
+        location.reload(true);
+      } else {
+        ElMessage({
+          message: res['message'],
+          type: 'error',
+        });
+      }
+    }).catch(error => {
+      ElMessage({
+        message: '服务器错误，请稍后再试。',
+        type: 'error',
+      });
+    });
   });
 }
 </script>

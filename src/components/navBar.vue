@@ -13,10 +13,10 @@
     <el-sub-menu index="/user" v-if="sessionData?.signin">
       <template #title>用户</template>
       <el-menu-item @click="checkIn" v-if="sessionData?.signin">{{ hasCheckedIn ? '已签到' : '签到' }}</el-menu-item>
-      <el-menu-item>用户：{{ sessionData?.name }}</el-menu-item>
+      <!-- <el-menu-item>用户：{{ sessionData?.name }}</el-menu-item>
       <el-menu-item>UID：{{ sessionData?.uid }}</el-menu-item>
       <el-menu-item>经验：{{ sessionData?.experience || 0 }}</el-menu-item>
-      <el-menu-item>积分：{{ sessionData?.points || 0 }}</el-menu-item>
+      <el-menu-item>积分：{{ sessionData?.points || 0 }}</el-menu-item> -->
       <el-menu-item @click="signOut">退出登录</el-menu-item>
     </el-sub-menu>
     <el-menu-item v-if="sessionData?.status === 1" index="/admin/hidevideo">审核</el-menu-item>
@@ -54,7 +54,7 @@ const checkIn = async () => {
     const response = await axios.post(`${apiUrl.value}/api/user/checkin`);
     if (response.data.state == 'success') {
       hasCheckedIn.value = true;
-      const userDataResponse = await axios.get(`${apiUrl.value}/api/user/data`);
+      const userDataResponse = await axios.get(`${apiUrl.value}/api/user/session/get`);
       if (userDataResponse.data) {
         store.commit('SET_SESSION_DATA', userDataResponse.data)
       }
