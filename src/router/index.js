@@ -34,12 +34,22 @@ const routes = [
         name: '注册',
         meta: { layout: 'form' },
         component: () => import('@/views/user/signup.vue')
+      },
+      {
+        path: 'setting',
+        name: '修改个人信息',
+        meta: { layout: 'form' },
+        component: () => import('@/views/user/setting.vue')
       }
     ]
   },
   {
     path: '/video/:aid',
     component: () => import('@/views/video/detail.vue')
+  },
+  {
+    path: '/space/:uid',
+    component: () => import('@/views/space/index.vue')
   },
   { 
   path: '/admin',

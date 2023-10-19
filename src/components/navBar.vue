@@ -13,10 +13,10 @@
     <el-sub-menu index="/user" v-if="sessionData?.signin">
       <template #title>用户</template>
       <el-menu-item @click="checkIn" v-if="sessionData?.signin">{{ hasCheckedIn ? '已签到' : '签到' }}</el-menu-item>
-      <!-- <el-menu-item>用户：{{ sessionData?.name }}</el-menu-item>
+      <el-menu-item index="/user/setting">修改信息</el-menu-item>
       <el-menu-item>UID：{{ sessionData?.uid }}</el-menu-item>
-      <el-menu-item>经验：{{ sessionData?.experience || 0 }}</el-menu-item>
-      <el-menu-item>积分：{{ sessionData?.points || 0 }}</el-menu-item> -->
+      <el-menu-item>经验：{{ sessionData?.checkin.experience || 0 }}</el-menu-item>
+      <el-menu-item>积分：{{ sessionData?.checkin.points || 0 }}</el-menu-item>
       <el-menu-item @click="signOut">退出登录</el-menu-item>
     </el-sub-menu>
     <el-menu-item v-if="sessionData?.status === 1" index="/admin/hidevideo">审核</el-menu-item>
@@ -41,8 +41,8 @@ const signOut = () => {
 const fetchCheckInStatus = async () => {
   try {
     const response = await axios.get(`${apiUrl.value}/api/user/session/get`);
-    if (response.data && response.data.can_checkin !== undefined) {
-      hasCheckedIn.value = !response.data.can_checkin;  // 注意这里我们使用"!"，因为如果"can_checkin"是true，那么用户还没有签到
+    if (response.data && response.data.checkin.can_checkin !== undefined) {
+      hasCheckedIn.value = !response.data.checkin.can_checkin;  // 注意这里我们使用"!"，因为如果"can_checkin"是true，那么用户还没有签到
     }
   } catch (error) {
     console.error('Error fetching check-in status:', error);

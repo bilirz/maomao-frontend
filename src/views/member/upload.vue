@@ -43,7 +43,7 @@
               class="avatar-uploader"
               :show-file-list="false"
               :before-upload="handleCoverSelection"
-              accept="image/jpeg,image/png"
+              accept="image/*"
             >
               <!-- 图片预览 -->
               <img v-if="coverImagePreview" class="avatar" :src="coverImagePreview" />
@@ -123,7 +123,7 @@
             ></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="submitVideo" :disabled="isSubmitting">提交</el-button>
+            <el-button type="primary" @click="submitVideo" :loading="isSubmitting" :disabled="isSubmitting">提交</el-button>
           </el-form-item>
           <p v-if="isSubmitting">正在上传，请不要关闭此页面...</p>
         </el-form>
@@ -157,16 +157,15 @@ const isSubmitting = ref(false);
 const showSuccessResult = ref(false);
 
 const formData = reactive({
-    title: '',
-    filename: '',
-    coverFile: null,
-    category: '',
-    description: '',
-    source: '自制',
-    origin: '',
-    tags: []
-  });
-
+  title: '',
+  filename: '',
+  coverFile: null,
+  category: '',
+  description: '',
+  source: '自制',
+  origin: '',
+  tags: []
+});
 
 const handleSourceChange = () => {
   // 当选择"自制"时，清除出处字段

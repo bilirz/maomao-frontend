@@ -1,6 +1,6 @@
 <template>
   <el-row :gutter="16" v-infinite-scroll="emitLoadMore">
-    <el-col v-for="video in videos" :key="video.aid" :xs="24" :md="{ span: 10, offset: 2 }" :lg="{ span: 8, offset: 0 }">
+    <el-col v-for="video in videos" :key="video.aid" :xs="24" :md="{ span: 12, offset: 0 }" :lg="{ span: 8, offset: 0 }">
       <el-card @click="handleCardClick($event, video)" :body-style="{ padding: '10px' }" style="margin-bottom: 10px;">
         <div class="image-wrapper">
           <img v-if="!video.hidden || !video.hidden.is_hidden" :src="getVideoCover(video.aid)" class="image" />

@@ -7,9 +7,6 @@
       <el-form-item label="封禁原因:" :rules="[{required: true, message: '原因为必填项。'}]">
         <el-input v-model="formData.reason"></el-input>
       </el-form-item>
-      <!-- <el-form-item label="封禁等级:" :rules="[{required: true, message: '等级为必填项'}]">
-        <el-input v-model="formData.grade"></el-input>
-      </el-form-item> -->
       <el-form-item>
         <el-button type="primary" @click="hideVideo">隐藏视频</el-button>
       </el-form-item>
@@ -19,7 +16,6 @@
 
 <script setup>
 import { ref } from 'vue'
-import { ElMessage } from 'element-plus'
 import { useStore } from 'vuex';
 import axios from 'axios';
 import mmCard from '@/components/rzm/mmCard.vue';
