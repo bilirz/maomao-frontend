@@ -84,7 +84,7 @@ router.beforeEach((to, from, next) => {
     return;
   }
 
-  if (!signin && to.path === '/member/upload') {
+  if (!signin && (to.path === '/member/upload' || to.path === '/user/setting')) {
     next('/user/signin');
     return;
   }

@@ -59,7 +59,7 @@ function handleCardClick(event, video) {
   ripple.addEventListener("animationend", () => {
     ripple.remove();
     if (!video.hidden || !video.hidden.is_hidden) {
-        router.push(`/video/${video.aid}`);
+      router.push(`/video/${video.aid}`);
     }
   });
 }

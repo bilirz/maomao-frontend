@@ -187,9 +187,17 @@ const tagsRule = {
   trigger: 'blur'
 };
 
+const forbiddenTags = ["自制", "转载", "游戏", "生活", "知识", "科技", "音乐", "鬼畜", "动画", "时尚", "舞蹈", "娱乐", "美食", "动物"]
 const handleTagEnter = () => {
     // 1. 检查currentTag是否为空
     if (!currentTag.value) {
+        return;
+    }
+    
+    // 2. 检查禁止的标签
+    if (forbiddenTags.includes(currentTag.value)) {
+        ElMessage.warning('您不能使用这个词语作为标签');
+        currentTag.value = '';
         return;
     }
 
