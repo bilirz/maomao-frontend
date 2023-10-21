@@ -144,6 +144,7 @@
 <script setup>
 import { ref, watchEffect, reactive, toRaw } from 'vue';
 import { useStore } from 'vuex';
+import { v4 as uuidv4 } from 'uuid';
 
 import axios from 'axios';
 
@@ -155,6 +156,7 @@ const uploadProgress = ref(0);
 const isIndeterminateLoading = ref(false);
 const isSubmitting = ref(false);
 const showSuccessResult = ref(false);
+const uniqueId = uuidv4();
 
 const formData = reactive({
   title: '',
@@ -187,9 +189,17 @@ const tagsRule = {
   trigger: 'blur'
 };
 
+const forbiddenTags = ["自制", "转载", "游戏", "生活", "知识", "科技", "音乐", "鬼畜", "动画", "时尚", "舞蹈", "娱乐", "美食", "动物"]
 const handleTagEnter = () => {
     // 1. 检查currentTag是否为空
     if (!currentTag.value) {
+        return;
+    }
+    
+    // 2. 检查禁止的标签
+    if (forbiddenTags.includes(currentTag.value)) {
+        ElMessage.warning('您不能使用这个词语作为标签');
+        currentTag.value = '';
         return;
     }
 
@@ -221,31 +231,67 @@ const handleTagClose = (index) => {
   formData.tags.splice(index, 1); // 删除指定索引的标签
 };
 
+const CHUNK_SIZE = 90 * 1024 * 1024; // 90MB
+
 const onFileChange = async (fileChangeEvent) => {
   const file = fileChangeEvent.raw;
 
-  if (file.size / 1024 / 1024 > 100) {
-    ElMessage.error('只支持100M以下的文件');
+  if (!file.type.startsWith('video/')) {
+    ElMessage.error('仅支持视频文件的上传');
+    return;
+  }
+
+  if (file.size / 1024 / 1024 > 500) {
+    ElMessage.error('只支持500M以下的文件');
     return;
   }
 
   isIndeterminateLoading.value = true;
 
-  const videoData = new FormData();
-  videoData.append('file', file);
+  // 文件分片
+  const chunks = [];
+  const chunkCount = Math.ceil(file.size / CHUNK_SIZE);
+  for (let i = 0; i < chunkCount; i++) {
+    const start = i * CHUNK_SIZE;
+    const end = i === chunkCount - 1 ? file.size : start + CHUNK_SIZE;
+    const chunk = file.slice(start, end);
+    chunks.push(chunk);
+  }
 
+  // 上传片段
   try {
-    const response = await axios.post(`${apiUrl.value}/api/upload/video`, videoData, {
-      onUploadProgress: progressEvent => {
-        uploadProgress.value = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+    for (let i = 0; i < chunks.length; i++) {
+      const formData = new FormData();
+      formData.append('file', chunks[i], `${file.name}.part${i + 1}`);
+      formData.append('unique_id', uniqueId);  // 添加唯一ID到表单数据
+      formData.append('index', i.toString());
+      formData.append('total', chunks.length.toString());
+
+      const response = await axios.post(`${apiUrl.value}/api/upload/video/chunk`, formData, {
+        onUploadProgress: progressEvent => {
+          const totalUploaded = (i * CHUNK_SIZE) + progressEvent.loaded;
+          uploadProgress.value = Math.round((totalUploaded * 100) / file.size);
+        }
+      });
+
+      if (response.data.state !== 'success') {
+        ElMessage.error(response.data.message);
+        isIndeterminateLoading.value = false;
+        return;
       }
+    }
+    // 通知服务器合并片段
+    const mergeResponse = await axios.post(`${apiUrl.value}/api/upload/video/merge`, {
+      unique_id: uniqueId,   // 向合并请求添加唯一ID
+      total: chunks.length
     });
 
-    if (response.data.state === 'success') {
-      formData.filename = response.data.filename;
+    if (mergeResponse.data.state === 'success') {
+      formData.filename = mergeResponse.data.filename;
       showUploader.value = false;
     } else {
-      ElMessage.error(response.data.message);
+      ElMessage.error(mergeResponse.data.message);
+      isIndeterminateLoading.value = false;
     }
   } catch (error) {
     ElMessage.error('上传失败！请检查文件大小与后缀名');
@@ -306,6 +352,7 @@ const submitVideo = async () => {
   data.append('source', rawFormData.source);
   data.append('origin', rawFormData.origin);
   data.append('tags', rawFormData.tags);
+  data.append('unique_id', uniqueId);
 
   try {
     const response = await axios.post(`${apiUrl.value}/api/upload/submit`, data);
