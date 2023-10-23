@@ -22,7 +22,7 @@ export default createStore({
         commit('SET_SESSION_DATA', response.data);
       } catch (error) {
         // handle error
-        console.error('获取会话数据出错：', error);
+        console.error('获取session数据出错：', error);
       }
     },
   },

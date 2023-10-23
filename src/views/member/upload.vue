@@ -43,7 +43,7 @@
               class="avatar-uploader"
               :show-file-list="false"
               :before-upload="handleCoverSelection"
-              accept="image/jpeg,image/png"
+              accept="image/*"
             >
               <!-- 图片预览 -->
               <img v-if="coverImagePreview" class="avatar" :src="coverImagePreview" />
@@ -92,9 +92,40 @@
           >
             <el-input type="textarea" v-model="formData.description" placeholder="为你的视频添加简介"></el-input>
           </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="submitVideo" :disabled="isSubmitting">提交</el-button>
+          <!-- 自制和转载的单选框 -->
+          <el-form-item label="视频来源" prop="source" :rules="[{
+            required: true,
+            message: '视频来源为必填项。'
+          }]">
+            <el-radio-group v-model="formData.source" @change="handleSourceChange">
+              <el-radio label="自制">自制</el-radio>
+              <el-radio label="转载">转载</el-radio>
+            </el-radio-group>
           </el-form-item>
+
+          <!-- 如果选择了"转载"，则显示此文本框 -->
+          <el-form-item v-if="formData.source === '转载'" label="出处" prop="origin" :rules="[{
+            required: true,
+            message: '转载必须填写出处。'
+          }]">
+            <el-input v-model="formData.origin" placeholder="请填写出处..."></el-input>
+          </el-form-item>
+
+          <!-- 标签输入 -->
+          <el-form-item :label="`视频标签 (${formData.tags.length}/12)`" prop="tags" :rules="[tagsRule]">
+            <div v-for="(tag, index) in formData.tags" :key="index" class="tag-item">
+              <el-tag closable @close="handleTagClose(index)">{{ tag }}</el-tag>
+            </div>
+            <el-input
+              v-model="currentTag"
+              placeholder="输入标签后按回车确认"
+              @keyup.enter="handleTagEnter"
+            ></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="submitVideo" :loading="isSubmitting" :disabled="isSubmitting">提交</el-button>
+          </el-form-item>
+          <p v-if="isSubmitting">正在上传，请不要关闭此页面...</p>
         </el-form>
       </mmCard>
     </div>
@@ -113,6 +144,7 @@
 <script setup>
 import { ref, watchEffect, reactive, toRaw } from 'vue';
 import { useStore } from 'vuex';
+import { v4 as uuidv4 } from 'uuid';
 
 import axios from 'axios';
 
@@ -124,40 +156,142 @@ const uploadProgress = ref(0);
 const isIndeterminateLoading = ref(false);
 const isSubmitting = ref(false);
 const showSuccessResult = ref(false);
+const uniqueId = uuidv4();
 
 const formData = reactive({
-    title: '',
-    filename: '',
-    coverFile: null,
-    category: '',
-    description: ''
-  });
+  title: '',
+  filename: '',
+  coverFile: null,
+  category: '',
+  description: '',
+  source: '自制',
+  origin: '',
+  tags: []
+});
+
+const handleSourceChange = () => {
+  // 当选择"自制"时，清除出处字段
+  if (formData.source === '自制') {
+    formData.origin = '';
+  }
+};
+
+const currentTag = ref(''); // 用于存储当前正在输入的标签
+
+const tagsRule = {
+  validator(_, value, callback) {
+    if (value.length < 3) {
+      callback(new Error('至少需要3个标签'));
+    } else {
+      callback();
+    }
+  },
+  trigger: 'blur'
+};
+
+const forbiddenTags = ["自制", "转载", "游戏", "生活", "知识", "科技", "音乐", "鬼畜", "动画", "时尚", "舞蹈", "娱乐", "美食", "动物"]
+const handleTagEnter = () => {
+    // 1. 检查currentTag是否为空
+    if (!currentTag.value) {
+        return;
+    }
+    
+    // 2. 检查禁止的标签
+    if (forbiddenTags.includes(currentTag.value)) {
+        ElMessage.warning('您不能使用这个词语作为标签');
+        currentTag.value = '';
+        return;
+    }
+
+    // 2. 检查标签的长度
+    if (currentTag.value.length > 12) {
+        ElMessage.warning('每个标签的长度不能超过12个字符！');
+        currentTag.value = '';
+        return;
+    }
+
+    // 3. 检查重复的标签
+    if (formData.tags.includes(currentTag.value)) {
+        ElMessage.warning('该标签已经存在！');
+        currentTag.value = '';
+        return;
+    }
+
+    // 4. 检查标签总数是否已经是12
+    if (formData.tags.length >= 12) {
+        ElMessage.warning('只允许输入最多12个标签！');
+        return;
+    }
+
+    formData.tags.push(currentTag.value);
+    currentTag.value = '';
+};
+
+const handleTagClose = (index) => {
+  formData.tags.splice(index, 1); // 删除指定索引的标签
+};
+
+const CHUNK_SIZE = 90 * 1024 * 1024; // 90MB
 
 const onFileChange = async (fileChangeEvent) => {
   const file = fileChangeEvent.raw;
 
-  if (file.size / 1024 / 1024 > 100) {
-    ElMessage.error('只支持100M以下的文件');
+  if (!file.type.startsWith('video/')) {
+    ElMessage.error('仅支持视频文件的上传');
+    return;
+  }
+
+  if (file.size / 1024 / 1024 > 500) {
+    ElMessage.error('只支持500M以下的文件');
     return;
   }
 
   isIndeterminateLoading.value = true;
 
-  const videoData = new FormData();
-  videoData.append('file', file);
+  // 文件分片
+  const chunks = [];
+  const chunkCount = Math.ceil(file.size / CHUNK_SIZE);
+  for (let i = 0; i < chunkCount; i++) {
+    const start = i * CHUNK_SIZE;
+    const end = i === chunkCount - 1 ? file.size : start + CHUNK_SIZE;
+    const chunk = file.slice(start, end);
+    chunks.push(chunk);
+  }
 
+  // 上传片段
   try {
-    const response = await axios.post(`${apiUrl.value}/api/upload/video`, videoData, {
-      onUploadProgress: progressEvent => {
-        uploadProgress.value = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+    for (let i = 0; i < chunks.length; i++) {
+      const formData = new FormData();
+      formData.append('file', chunks[i], `${file.name}.part${i + 1}`);
+      formData.append('unique_id', uniqueId);  // 添加唯一ID到表单数据
+      formData.append('index', i.toString());
+      formData.append('total', chunks.length.toString());
+
+      const response = await axios.post(`${apiUrl.value}/api/upload/video/chunk`, formData, {
+        onUploadProgress: progressEvent => {
+          const totalUploaded = (i * CHUNK_SIZE) + progressEvent.loaded;
+          uploadProgress.value = Math.round((totalUploaded * 100) / file.size);
+        }
+      });
+
+      if (response.data.state !== 'success') {
+        ElMessage.error(response.data.message);
+        isIndeterminateLoading.value = false;
+        return;
       }
+    }
+    // 通知服务器合并片段
+    const mergeResponse = await axios.post(`${apiUrl.value}/api/upload/video/merge`, {
+      unique_id: uniqueId,   // 向合并请求添加唯一ID
+      total: chunks.length
     });
 
-    if (response.data.state === 'success') {
-      formData.filename = response.data.filename;
+    if (mergeResponse.data.state === 'success') {
+      formData.filename = mergeResponse.data.filename;
       showUploader.value = false;
     } else {
-      ElMessage.error(response.data.message);
+      ElMessage.error(mergeResponse.data.message);
+      isIndeterminateLoading.value = false;
     }
   } catch (error) {
     ElMessage.error('上传失败！请检查文件大小与后缀名');
@@ -194,15 +328,31 @@ watchEffect(() => {
 });
 
 const submitVideo = async () => {
+  // 在提交前检查标签数量
+  if (formData.tags.length < 3) {
+    ElMessage.warning('标签至少需要3个！');
+    isSubmitting.value = false; // 这里停止提交进程
+    return; // 这里退出函数
+  }
+
   isSubmitting.value = true;
   const data = new FormData();
   const rawFormData = toRaw(formData);
+
+  // 这里添加每一个标签到FormData对象中
+  formData.tags.forEach((tag, idx) => {
+    data.append(`tag${idx}`, tag);
+  });
 
   data.append('title', rawFormData.title);
   data.append('video', rawFormData.filename);
   data.append('category', rawFormData.category);
   data.append('description', rawFormData.description);
   data.append('cover', rawFormData.coverFile);
+  data.append('source', rawFormData.source);
+  data.append('origin', rawFormData.origin);
+  data.append('tags', rawFormData.tags);
+  data.append('unique_id', uniqueId);
 
   try {
     const response = await axios.post(`${apiUrl.value}/api/upload/submit`, data);
@@ -215,7 +365,7 @@ const submitVideo = async () => {
   } catch (error) {
     ElMessage.error('提交失败！');
   }
-  
+  isSubmitting.value = false; // 提交结束，无论成功或失败
 };
 
 const goBack = () => {
@@ -261,5 +411,11 @@ const goBack = () => {
 
 .avatar-uploader .el-upload:hover .avatar-uploader-icon {
   color: var(--el-color-primary); /* 当悬停时，使用主题颜色 */
+}
+
+.tag-item {
+  display: inline-block;
+  margin-right: 10px;
+  margin-bottom: 10px;
 }
 </style>
