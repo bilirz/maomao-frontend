@@ -3,7 +3,7 @@
     <div class="tip custom-block">
       <p class="custom-block-title">逐步放开限制</p>
       <p class="custom-block-text">新投稿的视频不会被压缩成480p了, 音频也不会被压缩了</p>
-      <p class="custom-block-text">现在网站还差160元赞助就可以购买付费CDN解除100M上传了, 大家加把劲</p>
+      <p class="custom-block-text">限制可以上传小于500M视频了</p>
       <p class="custom-block-text"><el-link type="primary" href="https://v.bilirz.com/video/141" target="_blank">本次放开具体效果请看本视频画质与音质</el-link></p>
     </div>
     <div v-if="showTencentTip" class="tip custom-block">

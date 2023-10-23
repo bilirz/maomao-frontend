@@ -16,7 +16,7 @@
           <div class="el-upload__text">上传</div>
           <template #tip>
             <div class="el-upload__tip">
-                文件大小不能超过100M。
+                文件大小不能超过500M。
             </div>
           </template>
         </el-upload>
