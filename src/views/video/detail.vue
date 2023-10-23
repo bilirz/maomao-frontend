@@ -20,7 +20,11 @@
     <mmCard v-if="videoInfo && upInfo" title="UP主详情" style="margin-bottom: 10px;">
       <div class="video-info up-details">
         <div class="up-face">
+<<<<<<< HEAD
           <img :src="upFaceUrl" alt="UP主头像" @error="event => event.target.src='/default_face.png'"  />
+=======
+          <img :src="upFaceUrl" alt="UP主头像" @error="event => event.target.src='../../assets/default_face.png'"  />
+>>>>>>> 99859413483986ac8f25b37738ab428acd25b96f
         </div>
         <div class="up-info-details">
           <strong class="up-name"><el-icon><User /></el-icon>{{ upInfo.name }}</strong>
