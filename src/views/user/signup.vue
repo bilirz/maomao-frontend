@@ -188,7 +188,7 @@ const submitForm = (formEl) => {
       let res = response.data;
       if (res['state'] === 'succeed') {
         ElNotification({  // TODO: 发送验证链接而不是验证码
-          title: '请确认你注册成功',
+          title: '注册成功',
           message: '即将为您跳转到登录页面...',
           type: 'success',
         });
