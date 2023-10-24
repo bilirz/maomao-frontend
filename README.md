@@ -6,7 +6,7 @@
 
 网站功能还非常简单，期待大家的丰富。
 
-欢迎加入猫猫站用户与技术QQ群[938875753](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=uR2HdCdhU-KPkba3FGUcRBjEeobR2f80&authKey=bRNWJKwJ2RJ2xH8%2BsgUTpM2RE8mSkxYYDgmH1kHYlUkJ%2BYK%2Bb9A1Ncr5SzAvh65G&noverify=0&group_code=938875753)
+欢迎加入猫猫站用户与技术QQ群：`542174643`
 
 
 ### TODO
