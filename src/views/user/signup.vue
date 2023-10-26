@@ -78,12 +78,13 @@
 </template>
 
 <script setup>
-import { reactive, computed, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import { useUrlStore } from '@/store/urlStore';
+import axios from 'axios';
+import { reactive, computed, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import router from '@/router';
-import axios from 'axios'
+import { useUrlStore } from '@/store/urlStore';
 import mmCard from '@/components/rzm/mmCard.vue';
+
 
 const urlStore = useUrlStore();
 const apiUrl = computed(() => urlStore.apiUrl);

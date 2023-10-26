@@ -27,6 +27,7 @@ import { computed, defineProps, defineEmits } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUrlStore } from '@/store/urlStore';
 
+// 定义组件属性
 const props = defineProps({
   videos: {
     type: Array,
@@ -42,8 +43,10 @@ const router = useRouter();
 const urlStore = useUrlStore();
 const cosUrl = computed(() => urlStore.cosUrl);
 
+// 根据aid获取视频封面
 const getVideoCover = aid => `${cosUrl.value}/covers/${aid}.jpg`;
 
+// 处理视频卡片的点击事件
 function handleCardClick(event, video) {
   const card = event.currentTarget;
   const ripple = document.createElement("span");
@@ -64,6 +67,7 @@ function handleCardClick(event, video) {
   });
 }
 
+// 定义发射的事件
 const emits = defineEmits(['load-more']);
 
 function emitLoadMore() {

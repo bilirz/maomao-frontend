@@ -67,16 +67,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, nextTick, watch } from 'vue';
-import { useRoute } from 'vue-router';
-import { useUserStore } from '@/store/userStore';
-import { useUrlStore } from '@/store/urlStore';
 import axios from 'axios';
-import useFormat from "@/composables/useFormat";
-import mmCard from '@/components/rzm/mmCard.vue';
 import DPlayer from 'dplayer';
 import Hls from 'hls.js';
 // import { io } from 'socket.io-client';
+import { ref, onMounted, computed, nextTick, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import useFormat from "@/composables/useFormat";
+import { useUserStore } from '@/store/userStore';
+import { useUrlStore } from '@/store/urlStore';
+import mmCard from '@/components/rzm/mmCard.vue';
+
 
 const route = useRoute();
 const aid = route.params.aid;
@@ -87,13 +88,12 @@ const cosUrl = computed(() => urlStore.cosUrl);
 const sessionData = computed(() => userStore.sessionData);
 // const socket = io(apiUrl.value);
 
+// 如果用DPlayer，设置XMLHttpRequest进行跨域带cookie
 const oldOpen = XMLHttpRequest.prototype.open;
-
 XMLHttpRequest.prototype.open = function() {
     oldOpen.apply(this, arguments);
     this.withCredentials = true;
 };
-
 
 let videoUrl;
 if (parseInt(aid) > 116) {
@@ -108,6 +108,7 @@ const { formatTimestamp, getCategoryByValue } = useFormat();
 const videoInfo = ref(null);
 const lastLikeClickTime = ref(0);
 
+// 格式化视频标签
 const formattedTags = computed(() => {
   if (videoInfo.value && videoInfo.value.tags) {
     let newTags = [];
@@ -124,21 +125,21 @@ const formattedTags = computed(() => {
   return [];
 });
 
-
+// 视频浏览量+1
 const incrementViewCount = async () => {
   await axios.post(`${apiUrl.value}/api/video/add/view/${aid}`);
 }
 
+// 获取视频信息
 axios.get(`${apiUrl.value}/api/video/get/${aid}`)
   .then(response => {
     videoInfo.value = response.data;
   });
 
-
-const upInfo = ref(null); // 用于保存UP主的信息
+const upInfo = ref(null);
 const upFaceUrl = computed(() => `${cosUrl.value}/face/${videoInfo.value.uid}.jpg`);
 
-// 当获取到videoInfo后，再去请求UP主的信息
+// 当有videoInfo时，获取UP主信息
 watch(videoInfo, async () => {
   if (videoInfo.value) {
     const response = await axios.get(`${apiUrl.value}/api/space/${videoInfo.value.uid}`);
@@ -161,6 +162,7 @@ const loadVideoAndCover = async () => {
   }
 };
 
+// 点赞功能，防止用户连续点击
 const toggleLike = async () => {
   const currentTime = Date.now();
   if (currentTime - lastLikeClickTime.value < 1000) {
@@ -199,7 +201,7 @@ const loadComments = async () => {
 const lastCommentContent = ref("");  // 上一次成功提交的评论内容
 const lastReplyContent = ref({});    // 键是commentId，值是上一次成功提交的回复内容
 
-
+// 评论逻辑
 const postComment = async () => {
   const content = newComment.value;
 
@@ -230,6 +232,7 @@ const postComment = async () => {
 };
 
 
+// 显示/隐藏回复框的逻辑
 const commentStates = ref({});
 
 const showReplyBox = (commentId) => {
@@ -274,12 +277,12 @@ const postReply = async (commentId) => {
 };
 
 
+// 播放器加载时的逻辑
 onMounted(async () => {
   await nextTick();
   
   loadVideoAndCover();
-  loadComments();  // 页面加载时获取评论
-  // 延迟初始化 video.js
+  loadComments();
   setTimeout(() => {
     const dp = new DPlayer({
       container: document.getElementById('dplayer'),
@@ -295,29 +298,11 @@ onMounted(async () => {
           }
         },
       },
-      // danmaku: {
-      //   id: aid,
-      //   api: `${apiUrl.value}/api/danmaku/`,
-      //   user: sessionData.value['uid'],
-      //   unlimited: true,
-      // },
    });
 
     dp.on('play', function () {
       incrementViewCount();
     });
-
-    // // 当收到新的弹幕时，向DPlayer添加弹幕
-    // socket.on('danmaku', function (data) {
-    //   console.log(1);
-    //   dp.danmaku.draw(data);
-    // });
-
-    // // 当DPlayer的send()方法被调用时（即用户发送弹幕时），通过WebSocket发送弹幕数据
-    // dp.on('danmaku_send', function (data) {
-    //   console.log(data);
-    //   socket.emit('send danmaku', data);
-    // });
     
   }, 1000);
 });

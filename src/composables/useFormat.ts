@@ -2,6 +2,7 @@ type Categories = {
   [key: number]: string;
 };
 
+// 将时间戳改为 2023-01-01 12:00:00 格式
 export default function useFormat() {
   const formatTimestamp = (timestamp: number): string => {
     let date = new Date(timestamp * 1000);
@@ -14,6 +15,8 @@ export default function useFormat() {
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   }
 
+
+// 将分区ID展示成分区
   const getCategoryByValue = (value: number): string => {
     const categories: Categories = {
       100: "游戏",

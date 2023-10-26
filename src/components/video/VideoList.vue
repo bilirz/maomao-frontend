@@ -12,35 +12,37 @@
 </template>
 
 <script setup>
+import axios from 'axios';
 import { ref, computed } from 'vue';
 import { useUrlStore } from '@/store/urlStore';
-import axios from 'axios'
 import VideoGrid from './VideoGrid.vue';
 
 const urlStore = useUrlStore();
 const apiUrl = computed(() => urlStore.apiUrl);
 
 const hasMoreVideos = ref(true);
-
 const activeName = ref('home');
 const videos = ref([]);
 const currentAid = ref(1);
 let isLoading = false;
 const isAllDataLoaded = ref(false);
 
+// 点击标签时的处理函数
 function handleClick(tab) {
   const tabName = tab.props.name;
   resetVideosData();
   loadMore(tabName);
 }
 
+// 重置视频数据
 function resetVideosData() {
   videos.value = [];
   currentAid.value = 1;
   isAllDataLoaded.value = false;
-  hasMoreVideos.value = true
+  hasMoreVideos.value = true;
 }
 
+// 加载更多的视频, 根据类型, 默认为'home'
 async function loadMore(type = 'home') {
   if (isLoading || isAllDataLoaded.value) return;
 
@@ -67,6 +69,7 @@ async function loadMore(type = 'home') {
   }
 }
 
+// 在组件初始化时加载视频
 loadMore();
 
 </script>
