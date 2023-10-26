@@ -25,7 +25,7 @@
 <script setup>
 import { computed, defineProps, defineEmits } from 'vue';
 import { useRouter } from 'vue-router';
-import { useStore } from 'vuex';
+import { useUrlStore } from '@/store/urlStore';
 
 const props = defineProps({
   videos: {
@@ -39,8 +39,8 @@ const props = defineProps({
 });
 
 const router = useRouter();
-const store = useStore();
-const cosUrl = computed(() => store.state.cosUrl);
+const urlStore = useUrlStore();
+const cosUrl = computed(() => urlStore.cosUrl);
 
 const getVideoCover = aid => `${cosUrl.value}/covers/${aid}.jpg`;
 

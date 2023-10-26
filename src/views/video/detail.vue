@@ -69,21 +69,23 @@
 <script setup>
 import { ref, onMounted, computed, nextTick, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { useStore } from 'vuex';
+import { useUserStore } from '@/store/userStore';
+import { useUrlStore } from '@/store/urlStore';
 import axios from 'axios';
 import useFormat from "@/composables/useFormat";
 import mmCard from '@/components/rzm/mmCard.vue';
 import DPlayer from 'dplayer';
 import Hls from 'hls.js';
-import { io } from 'socket.io-client';
+// import { io } from 'socket.io-client';
 
 const route = useRoute();
 const aid = route.params.aid;
-const store = useStore();
-const apiUrl = computed(() => store.state.apiUrl);
-const cosUrl = computed(() => store.state.cosUrl);
-const sessionData = computed(() => store.state.sessionData);
-const socket = io(apiUrl.value);
+const userStore = useUserStore();
+const urlStore = useUrlStore();
+const apiUrl = computed(() => urlStore.apiUrl);
+const cosUrl = computed(() => urlStore.cosUrl);
+const sessionData = computed(() => userStore.sessionData);
+// const socket = io(apiUrl.value);
 
 const oldOpen = XMLHttpRequest.prototype.open;
 

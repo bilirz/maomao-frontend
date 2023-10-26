@@ -69,7 +69,8 @@
 
 <script setup>
 import { ref, reactive, computed } from 'vue';
-import { useStore } from 'vuex';
+import { useUserStore } from '@/store/userStore';
+import { useUrlStore } from '@/store/urlStore';
 import axios from 'axios';
 import 'cropperjs/dist/cropper.css';
 import VueCropper from 'vue-cropperjs';
@@ -77,10 +78,11 @@ import VueCropper from 'vue-cropperjs';
 const cropperVisible = ref(false);
 const finalfaceImage = ref(null);
 
-const store = useStore();
-const apiUrl = ref(store.state.apiUrl);
-const cosUrl = computed(() => store.state.cosUrl);
-const sessionData = computed(() => store.state.sessionData);
+const userStore = useUserStore();
+const urlStore = useUrlStore();
+const apiUrl = computed(() => urlStore.apiUrl);
+const cosUrl = computed(() => urlStore.cosUrl);
+const sessionData = computed(() => userStore.sessionData);
 const cropperRef = ref();
 const isSubmitting = ref(false);
 const showSuccessResult = ref(false);

@@ -143,13 +143,13 @@
 
 <script setup>
 import { ref, watchEffect, reactive, toRaw } from 'vue';
-import { useStore } from 'vuex';
+import { useUrlStore } from '@/store/urlStore';
 import { v4 as uuidv4 } from 'uuid';
 
 import axios from 'axios';
 
-const store = useStore();
-const apiUrl = ref(store.state.apiUrl);
+const urlStore = useUrlStore();
+const apiUrl = computed(() => urlStore.apiUrl);
 
 const showUploader = ref(true);
 const uploadProgress = ref(0);

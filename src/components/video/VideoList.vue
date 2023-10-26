@@ -13,12 +13,12 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { useStore } from 'vuex';
+import { useUrlStore } from '@/store/urlStore';
 import axios from 'axios'
 import VideoGrid from './VideoGrid.vue';
 
-const store = useStore();
-const apiUrl = computed(() => store.state.apiUrl);
+const urlStore = useUrlStore();
+const apiUrl = computed(() => urlStore.apiUrl);
 
 const hasMoreVideos = ref(true);
 

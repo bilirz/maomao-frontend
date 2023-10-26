@@ -1,7 +1,7 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: '主页',
@@ -10,6 +10,7 @@ const routes = [
   {
     path: '/member',
     name: '创作中心',
+    component: () => import('@/views/fatherContainer.vue'),
     children: [
       {
         path: 'upload',
@@ -22,6 +23,7 @@ const routes = [
   {
     path: '/user',
     name: '我的信息',
+    component: () => import('@/views/fatherContainer.vue'),
     children: [
       {
         path: 'signin',
@@ -54,6 +56,7 @@ const routes = [
   { 
   path: '/admin',
   name: '管理员',
+  component: () => import('@/views/fatherContainer.vue'),
   children: [
     {
       path: 'hidevideo',
@@ -62,22 +65,28 @@ const routes = [
       component: () => import('@/views/admin/hideVideo.vue')
     }
   ]
-},
-  
+  }
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHistory(),
   routes
 })
 
 
-import store from '../store/index.js';
+import { useUserStore } from '../store/userStore';
 
-router.beforeEach((to, from, next) => {
-  document.title = `${to.name || to.params.aid} - 猫猫站`;
+router.beforeEach(async (to, _from, next) => {
+  document.title = `${String(to.name || to.params.aid)} - 猫猫站`;
 
-  const { signin, status } = store.state.sessionData;
+  const userStore = useUserStore();
+  
+  if (userStore.sessionData.isload == false) {
+    await userStore.fetchSessionData();    
+  }
+
+  const { signin, status } = userStore.sessionData;
+  
 
   if (signin && (to.path === '/user/signup' || to.path === '/user/signin')) {
     next('/');
@@ -88,7 +97,6 @@ router.beforeEach((to, from, next) => {
     next('/user/signin');
     return;
   }
-
   // TODO: 这只是一个应急方式，后续需要改成动态路由
   if (status !== 1 && to.path === '/admin/hidevideo') {
     next('/');
@@ -98,4 +106,4 @@ router.beforeEach((to, from, next) => {
   next();
 });
 
-export default router
+export default router;

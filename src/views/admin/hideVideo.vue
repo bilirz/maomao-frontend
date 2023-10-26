@@ -15,13 +15,13 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useStore } from 'vuex';
+import { ref, computed } from 'vue'
+import { useUrlStore } from '@/store/urlStore';
 import axios from 'axios';
 import mmCard from '@/components/rzm/mmCard.vue';
 
-const store = useStore();
-const apiUrl = ref(store.state.apiUrl);
+const urlStore = useUrlStore();
+const apiUrl = computed(() => urlStore.apiUrl);
 
 const formData = ref({
   aid: '',

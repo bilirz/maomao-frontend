@@ -23,17 +23,17 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useStore } from 'vuex';
+import { useUrlStore } from '@/store/urlStore';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 import mmCard from '@/components/rzm/mmCard.vue';
 import useFormat from "@/composables/useFormat";
 import VideoGrid from '@/components/video/VideoGrid.vue';
 
-const store = useStore();
+const urlStore = useUrlStore();
 const route = useRoute();
-const apiUrl = ref(store.state.apiUrl);
-const cosUrl = ref(store.state.cosUrl);
+const apiUrl = computed(() => urlStore.apiUrl);
+const cosUrl = computed(() => urlStore.cosUrl);
 const { formatTimestamp } = useFormat();
 
 const userInfo = ref(null);

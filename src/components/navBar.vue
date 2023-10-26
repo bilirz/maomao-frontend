@@ -25,13 +25,18 @@
 
 <script setup>
 import { computed, ref, onMounted } from 'vue';
-import { useStore } from 'vuex';
+import { useUserStore } from '@/store/userStore';
+import { useUrlStore } from '@/store/urlStore';
 import axios from 'axios';
 
-const store = useStore();
-const apiUrl = computed(() => store.state.apiUrl);
-const sessionData = computed(() => store.state.sessionData);
+const userStore = useUserStore();
+const urlStore = useUrlStore();
+
+const apiUrl = computed(() => urlStore.apiUrl);
+const sessionData = computed(() => userStore.sessionData);
+
 const hasCheckedIn = ref(false);
+
 
 const signOut = () => {
   axios.post(`${apiUrl.value}/api/user/signout`)
@@ -42,10 +47,10 @@ const fetchCheckInStatus = async () => {
   try {
     const response = await axios.get(`${apiUrl.value}/api/user/session/get`);
     if (response.data && response.data.checkin.can_checkin !== undefined) {
-      hasCheckedIn.value = !response.data.checkin.can_checkin;  // 注意这里我们使用"!"，因为如果"can_checkin"是true，那么用户还没有签到
+      hasCheckedIn.value = !response.data.checkin.can_checkin;  // 注意这里使用"!"，因为如果"can_checkin"是true，那么用户还没有签到
     }
   } catch (error) {
-    console.error('Error fetching check-in status:', error);
+    console.error('获取签到状态错误:', error);
   }
 }
 
@@ -56,7 +61,7 @@ const checkIn = async () => {
       hasCheckedIn.value = true;
       const userDataResponse = await axios.get(`${apiUrl.value}/api/user/session/get`);
       if (userDataResponse.data) {
-        store.commit('SET_SESSION_DATA', userDataResponse.data)
+        userStore.commit('SET_SESSION_DATA', userDataResponse.data)
       }
       ElNotification({
         title: '签到成功',
