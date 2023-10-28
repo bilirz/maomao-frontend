@@ -1,0 +1,55 @@
+[
+  {
+    "stage": "alpha",
+    "version": "0.0.0",
+    "dotColor": "red",
+    "size": "large",
+    "date": "2023-10-08",
+    "changes": {
+      "milestone": ["萌发了想制作视频网站的念头"]
+    }
+  },
+  {
+    "stage": "alpha",
+    "version": "0.1.0",
+    "dotColor": "green",
+    "date": "2023-10-14",
+    "size": "small",
+    "changes": {
+      "feature": ["加入基本的用户注册与登录", "加入基本的发布与查看视频"],
+      "fix": ["修复了已知bug"]
+    }
+  },
+  {
+    "stage": "alpha",
+    "version": "0.2.0",
+    "dotColor": "green",
+    "date": "2023-10-19",
+    "size": "small",
+    "changes": {
+      "feature": ["加入了签到功能", "现在可以AI审核视频了"],
+      "architecture": ["使用腾讯云对象存储"]
+    }
+  },{
+    "stage": "alpha",
+    "version": "0.2.1",
+    "dotColor": "green",
+    "date": "2023-10-21",
+    "size": "small",
+    "changes": {
+      "feature": ["使用上传视频分片技术，可以上传更大的视频了"],
+      "fix": ["修复了已知bug"]
+    }
+  },{
+    "stage": "beta",
+    "version": "1.0.0",
+    "dotColor": "red",
+    "date": "2023-10-21",
+    "size": "large",
+    "changes": {
+      "feature": ["加入了更好看的导航栏与侧边栏", "加入了主页留言板", "加入了开发日志"],
+      "beautify": ["使用vuetify代替element-plus，全局美化"],
+      "architecture": ["使用pinia代替vuex", "使用TypeScript代替JavaScript", "使用vite代替webpack"]
+    }
+  }
+]

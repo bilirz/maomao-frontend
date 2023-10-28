@@ -1,65 +1,130 @@
 <template>
-  <el-menu mode="horizontal" router>
-    <el-menu-item index="/">
-      <img src="../assets/logo.png" alt="MaoMaoLogo" width="20" height="20" style="padding-right: 6px;">
-      <span>猫猫站</span>
-    </el-menu-item>
-    <el-menu-item index="/member/upload">投稿</el-menu-item>
-    <el-sub-menu index="/user" v-if="!sessionData?.signin">
-      <template #title>用户</template>
-      <el-menu-item index="/user/signin">登录</el-menu-item>
-      <el-menu-item index="/user/signup">注册</el-menu-item>
-    </el-sub-menu>
-    <el-sub-menu index="/user" v-if="sessionData?.signin">
-      <template #title>用户</template>
-      <el-menu-item @click="checkIn" v-if="sessionData?.signin">{{ hasCheckedIn ? '已签到' : '签到' }}</el-menu-item>
-      <el-menu-item index="/user/setting">修改信息</el-menu-item>
-      <el-menu-item>UID：{{ sessionData?.uid }}</el-menu-item>
-      <el-menu-item>经验：{{ sessionData?.checkin.experience || 0 }}</el-menu-item>
-      <el-menu-item>积分：{{ sessionData?.checkin.points || 0 }}</el-menu-item>
-      <el-menu-item @click="signOut">退出登录</el-menu-item>
-    </el-sub-menu>
-    <el-menu-item v-if="sessionData?.status === 1" index="/admin/hidevideo">审核</el-menu-item>
-  </el-menu>
+  <v-app>
+    <!-- 顶部工具栏 -->
+    <v-app-bar image="https://picsum.photos/1920/1080?random">
+      <template v-slot:image>
+        <v-img gradient="to bottom, rgba(255,255,255,0.7), rgba(255,255,255,0.7)"></v-img>
+      </template>
+      <v-app-bar-nav-icon @click="drawer = !drawer" color="#333"></v-app-bar-nav-icon>
+      <v-btn color="#333" min-width="100" to="/"><v-toolbar-title>猫猫站</v-toolbar-title></v-btn>
+
+      <v-spacer></v-spacer> <!-- 将按钮推到工具栏的右侧 -->
+
+      <v-btn color="#333" min-width="70" @click="checkIn" v-if="sessionData.signin">{{ hasCheckedIn ? '已签到' : '签到' }}</v-btn>
+      <v-btn color="#333" min-width="70" to="/member/upload"><v-icon>mdi-upload</v-icon>投稿</v-btn>
+    </v-app-bar>
+
+    <!-- 导航栏 -->
+    <v-navigation-drawer v-model="drawer" width="300">
+      <mmvCard v-if="sessionData.signin" v-ripple @click="goToProfile">
+        <v-row align="center">
+          <v-col cols="auto">
+            <avatar :src="upFaceUrl"></avatar>
+          </v-col>
+          
+          <v-col>
+            <div class="user-name">{{ sessionData.name }}</div>
+            <div class="user-uid">{{ sessionData.uid }}</div>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <div>经验：{{ sessionData.checkin.experience || 0 }}</div>
+            <div>积分：{{ sessionData.checkin.points || 0 }}</div>
+          </v-col>
+        </v-row>
+      </mmvCard>
+      <v-list @click="closeDrawer">
+      
+      <v-list-item v-for="(item, i) in items" :key="i" :value="item" rounded="xl" :to="item.to">
+        <template v-slot:prepend>
+          <v-icon :icon="item.icon"></v-icon>
+        </template>
+
+        <v-list-item-title v-text="item.text"></v-list-item-title>
+      </v-list-item>
+    </v-list>
+    </v-navigation-drawer>
+
+    <v-main>
+      <slot></slot>
+    </v-main>
+  </v-app>
 </template>
 
 <script setup>
-import axios from 'axios';
-import { computed, ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useUserStore } from '@/store/userStore';
 import { useUrlStore } from '@/store/urlStore';
+import axios from 'axios';
+import avatar from '@/components/user/avatar.vue';
+import mmvCard from '@/components/rzm/mmvCard.vue';
 
-// 初始化用户和URL存储
-const userStore = useUserStore();
 const urlStore = useUrlStore();
+const userStore = useUserStore();
+const router = useRouter();
 
-// 计算API的URL以及用户会话数据
 const apiUrl = computed(() => urlStore.apiUrl);
+const cosUrl = computed(() => urlStore.cosUrl);
 const sessionData = computed(() => userStore.sessionData);
 
-// 定义签到状态的引用
+// const dataLoaded = ref(false);
+// const userInfo = ref(null);
 const hasCheckedIn = ref(false);
+const upFaceUrl = computed(() => `${cosUrl.value}/face/${sessionData.value.uid}.jpg`);
 
-// 用户注销函数
-const signOut = () => {
-  axios.post(`${apiUrl.value}/api/user/signout`);
-  location.reload();
-}
 
-// 获取签到状态
+// watch(sessionData, async (newValue) => {
+//   if (newValue && newValue.uid) {
+//     try {
+//       const userResponse = await axios.get(`${apiUrl.value}/api/space/${newValue.uid}`);
+//       userInfo.value = userResponse.data;
+//       dataLoaded.value = true;
+//     } catch (error) {
+//       console.error("Failed to fetch user info:", error);
+//     }
+//   }
+// }, { immediate: true });
+
+
+const drawer = ref(false);
+
+const goToProfile = () => {
+  router.push(`/space/${sessionData.value.uid}`);
+  drawer.value = false;
+};
+
+const closeDrawer = () => {
+  drawer.value = false;
+};
+
+const items = computed(() => {
+  const baseItems = [
+    { text: '主页', icon: 'mdi-inbox', to: '/' },
+    { text: '开发日志', icon: 'mdi-timeline', to: '/log' }
+  ];
+  
+  if (!sessionData.value.signin) {
+    baseItems.unshift({ text: '登录', icon: 'mdi-account', to: '/user/signin' });
+    baseItems.unshift({ text: '注册', icon: 'mdi-account', to: '/user/signup' });
+  }
+
+  return baseItems;
+});
+
+
 const fetchCheckInStatus = async () => {
   try {
     const response = await axios.get(`${apiUrl.value}/api/user/session/get`);
     if (response.data && response.data.checkin.can_checkin !== undefined) {
-      // 注意这里使用"!"，因为如果"can_checkin"是true，那么用户还没有签到
-      hasCheckedIn.value = !response.data.checkin.can_checkin;
+      hasCheckedIn.value = !response.data.checkin.can_checkin;  // 注意这里使用"!"，因为如果"can_checkin"是true，那么用户还没有签到
     }
   } catch (error) {
     console.error('获取签到状态错误:', error);
   }
 }
 
-// 用户签到函数
 const checkIn = async () => {
   try {
     const response = await axios.post(`${apiUrl.value}/api/user/checkin`);
@@ -67,7 +132,7 @@ const checkIn = async () => {
       hasCheckedIn.value = true;
       const userDataResponse = await axios.get(`${apiUrl.value}/api/user/session/get`);
       if (userDataResponse.data) {
-        userStore.commit('SET_SESSION_DATA', userDataResponse.data);
+        userStore.setSessionData(userDataResponse.data);
       }
       ElNotification({
         title: '签到成功',
@@ -87,10 +152,22 @@ const checkIn = async () => {
       message: error,
       type: 'error',
     });
+    console.log(error);
   }
 }
 
-// 在组件挂载后，获取签到状态
 onMounted(fetchCheckInStatus);
 
 </script>
+
+<style scoped>
+.user-name {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.user-uid {
+  color: grey;
+  font-size: 14px;
+}
+</style>

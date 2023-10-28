@@ -1,29 +1,42 @@
 <template>
-  <el-row :gutter="16" v-infinite-scroll="emitLoadMore">
-    <el-col v-for="video in videos" :key="video.aid" :xs="24" :md="{ span: 12, offset: 0 }" :lg="{ span: 8, offset: 0 }">
-      <el-card @click="handleCardClick($event, video)" :body-style="{ padding: '10px' }" style="margin-bottom: 10px;">
-        <div class="image-wrapper">
-          <img v-if="!video.hidden || !video.hidden.is_hidden" :src="getVideoCover(video.aid)" class="image" />
-          <div v-else class="banned-info">
-            <p>很抱歉，{{ video.hidden.reason }}</p>
-            <p>操作人：{{ video.hidden.operator_name }}</p>
-          </div>
-          <span class="play-count">{{ video.data.view || '0' }}播放</span>
+  <v-row style="margin-top: 10px; margin-bottom: 10px;" class="video-container">
+    <v-col v-for="video in videos" :key="video.aid" cols="6" md="4" lg="4" class="no-spacing-small-screens">
+      <v-card @click="handleCardClick($event, video)" style="padding: 10px;">
+        <div v-if="!video.hidden || !video.hidden.is_hidden" class="image-wrapper">
+          <v-img :src="getVideoCover(video.aid)" class="image" />
+          <v-badge color="grey" content-class="play-count-content" overlap left bottom>
+            <template v-slot:badge>
+              &nbsp;&nbsp;&nbsp;<v-icon icon="mdi-thumb-up" style="margin-right: 10px;" />{{ video.data.like || '0' }}
+            </template>
+          </v-badge>
         </div>
-        <div style="padding: 14px">
-          <span class="title">{{ video.title }}</span>
-          <div class="bottom">
-            <span class="detail">UP主:{{ video.uploader_name }}</span>
-            <span class="detail">{{ video.data.like || '0' }}点赞</span>
-          </div>
+        <div v-else class="banned-info">
+          <p>很抱歉，{{ video.hidden.reason }}</p>
+          <p>操作人：{{ video.hidden.operator_name }}</p>
         </div>
-      </el-card>
-    </el-col>
-  </el-row>
+        <v-card-title class="multiline-title">
+          {{ video.title }}
+        </v-card-title>
+        <v-card-subtitle>
+          <v-row class="no-gutters">
+            <v-col>
+              <v-icon icon="mdi-account-box" style="margin-right: 10px;" />{{ video.uploader_name }}
+            </v-col>
+            <v-col>
+              <v-icon icon="mdi-play-box" style="margin-right: 10px;" />{{ video.data.view || '0' }}
+            </v-col>
+          </v-row>
+        </v-card-subtitle>
+      </v-card>
+    </v-col>
+    <v-col v-if="hasMore" cols="12" class="text-center">
+      <v-btn @click="emitLoadMore">加载更多</v-btn>
+    </v-col>
+  </v-row>
 </template>
 
 <script setup>
-import { computed, defineProps, defineEmits } from 'vue';
+import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUrlStore } from '@/store/urlStore';
 
@@ -48,23 +61,9 @@ const getVideoCover = aid => `${cosUrl.value}/covers/${aid}.jpg`;
 
 // 处理视频卡片的点击事件
 function handleCardClick(event, video) {
-  const card = event.currentTarget;
-  const ripple = document.createElement("span");
-  ripple.classList.add("ripple");
-  
-  const rect = card.getBoundingClientRect();
-  
-  ripple.style.left = `${event.clientX - rect.left}px`;
-  ripple.style.top = `${event.clientY - rect.top}px`;
-  
-  card.appendChild(ripple);
-
-  ripple.addEventListener("animationend", () => {
-    ripple.remove();
-    if (!video.hidden || !video.hidden.is_hidden) {
-      router.push(`/video/${video.aid}`);
-    }
-  });
+  if (!video.hidden || !video.hidden.is_hidden) {
+    router.push(`/video/${video.aid}`);
+  }
 }
 
 // 定义发射的事件
@@ -77,50 +76,7 @@ function emitLoadMore() {
 }
 </script>
 
-<style>
-
-.detail {
-  font-size: 12px;
-  color: #999;
-}
-
-.title {
-  font-size: 16px;
-  color: #666;
-}
-
-.bottom {
-  margin-top: 13px;
-  line-height: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-
-.el-card {
-  position: relative;
-  overflow: hidden; 
-}
-
-.ripple {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(182, 182, 182, 0.6);
-  transform: scale(0);
-  animation: ripple-animation 0.3s linear;
-  pointer-events: none;
-  width: 100px;
-  height: 100px;
-}
-
-@keyframes ripple-animation {
-  to {
-    transform: scale(4);
-    opacity: 0;
-  }
-}
-
+<style scoped>
 .image-wrapper {
   width: 100%;
   padding-bottom: 56.25%;
@@ -137,17 +93,6 @@ function emitLoadMore() {
   object-fit: cover;
 }
 
-.play-count {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  padding: 5px 10px;
-  font-size: 15px; 
-  border-top-right-radius: 5px;
-}
-
 .banned-info {
   position: absolute;
   top: 50%;
@@ -158,5 +103,19 @@ function emitLoadMore() {
   padding: 5px 10px;
   border-radius: 4px;
   text-align: center;
+}
+
+@media (max-width: 600px) {
+  .no-spacing-small-screens{
+    padding: 4px  !important;
+  }
+  .video-container * { /* 选择video-container类下的所有子元素 */
+      font-size: 14px; /* 例如，设置字体大小为14px */
+  }
+}
+
+.multiline-title {
+  white-space: normal !important;
+  overflow: visible !important;
 }
 </style>

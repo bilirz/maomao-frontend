@@ -1,7 +1,7 @@
 {
   "name": "frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "beta.1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -13,7 +13,6 @@
     "autoprefixer": "^10.4.16",
     "axios": "^1.5.1",
     "cropperjs": "^1.6.1",
-    "dplayer": "^1.27.1",
     "element-plus": "^2.4.1",
     "hls.js": "^1.4.12",
     "pinia": "^2.1.7",
@@ -21,11 +20,16 @@
     "sass": "^1.69.4",
     "tailwindcss": "^3.3.4",
     "uuid": "^9.0.1",
+    "video.js": "^8.6.1",
+    "videojs-hlsjs-plugin": "^1.0.5",
+    "vite-plugin-vuetify": "^1.0.2",
     "vue": "^3.3.4",
     "vue-cropperjs": "^5.0.0",
-    "vue-router": "^4.0.13"
+    "vue-router": "^4.0.13",
+    "vuetify": "^3.3.23"
   },
   "devDependencies": {
+    "@mdi/font": "^7.3.67",
     "@vitejs/plugin-vue": "^4.2.3",
     "typescript": "^5.0.2",
     "unplugin-auto-import": "^0.16.6",

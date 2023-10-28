@@ -1,12 +1,12 @@
 <template>
   <div>
-    <el-card class="rzm-card-title">
+    <v-card flat class="rzm-card-title custom-shadow">
       <span>{{ title }}</span>
-    </el-card>
+    </v-card>
     <div class="rzm-card-line"></div>
-    <el-card>
+    <v-card flat style="padding: 15px;" class="custom-shadow">
       <slot></slot>
-    </el-card>
+    </v-card>
   </div>
 </template>
 <script>
@@ -15,18 +15,21 @@
   }
 </script>
 <style scoped>
-  .rzm-card-title{
-    --el-card-padding: 5px
-  }
-  .rzm-card-line{
-    border:2px solid #25ACE3;
-    border-radius: 3px;
-    margin-top: 2px;
-    margin-bottom: 3px;
-  }
-  .rzm-card-title span{
-    color: #55A5FF;
-    font-weight:600;
-    font-size: 20px;
-  }
+.rzm-card-title{
+  padding: 10px;
+}
+.rzm-card-line{
+  border:2px solid #61aefb;
+  border-radius: 3px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.rzm-card-title span{
+  color: #61aefb;
+  font-weight:600;
+  font-size: 20px;
+}
+.custom-shadow {
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+}
 </style>

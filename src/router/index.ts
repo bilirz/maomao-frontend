@@ -8,6 +8,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/index.vue')
   },
   {
+    path: '/log',
+    name: '开发日志',
+    component: () => import('@/views/log.vue')
+  },
+  {
     path: '/member',
     name: '创作中心',
     component: () => import('@/views/fatherContainer.vue'),
@@ -77,7 +82,7 @@ const router = createRouter({
 import { useUserStore } from '../store/userStore';
 
 router.beforeEach(async (to, _from, next) => {
-  document.title = `${String(to.name || to.params.aid)} - 猫猫站`;
+  document.title = `${String(to.name || to.params.aid || to.params.uid)} - 猫猫站`;
 
   const userStore = useUserStore();
   

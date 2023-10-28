@@ -30,12 +30,11 @@
 </template>
 
 <script setup>
-import axios from 'axios';
-import { reactive, computed, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { reactive, computed, ref } from 'vue'
 import { useUrlStore } from '@/store/urlStore';
+import { useRouter } from 'vue-router'
+import axios from 'axios'
 import mmCard from '@/components/rzm/mmCard.vue';
-
 
 const urlStore = useUrlStore();
 const apiUrl = computed(() => urlStore.apiUrl);

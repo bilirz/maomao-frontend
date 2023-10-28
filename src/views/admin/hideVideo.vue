@@ -1,16 +1,10 @@
 <template>
   <mmCard title="隐藏一个视频">
-    <el-form ref="form" :model="formData" label-width="100px">
-      <el-form-item label="AID:" :rules="[{required: true, message: 'AID为必填项。'}]">
-        <el-input v-model="formData.aid"></el-input>
-      </el-form-item>
-      <el-form-item label="封禁原因:" :rules="[{required: true, message: '原因为必填项。'}]">
-        <el-input v-model="formData.reason"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="hideVideo">隐藏视频</el-button>
-      </el-form-item>
-    </el-form>
+    <v-form ref="form" v-model="validForm">
+      <v-text-field label="AID:" v-model="formData.aid" :rules="[rules.required]" required></v-text-field>
+      <v-text-field label="封禁原因:" v-model="formData.reason" :rules="[rules.required]" required></v-text-field>
+      <v-btn color="primary" @click="hideVideo" :disabled="!validForm">隐藏视频</v-btn>
+    </v-form>
   </mmCard>
 </template>
 

@@ -1,22 +1,16 @@
 <template>
   <div>
-    <mmCard v-if="userInfo" title="个人空间" style="margin-bottom: 10px;">
-      <div>
-        <img 
-        :src="`${cosUrl}/face/${route.params.uid}.jpg`" 
-        alt="头像" 
-        class="circle-face"
-        @error="event => event.target.src='/default_face.png'" />
-      </div>
+    <mmCard v-if="userInfo" title="个人空间">
+      <avatar :src="`${cosUrl}/face/${route.params.uid}.jpg`" size="80"></avatar>
       <div class="user-details">
         <h2>{{ userInfo.name }}</h2>
-        <p class="timestamp"><el-icon><Clock /></el-icon> {{ formatTimestamp(userInfo.registration_time) }}</p>
+        <p class="timestamp"><v-icon>mdi-clock-outline</v-icon> {{ formatTimestamp(userInfo.registration_time) }}</p>
         <div class="follower-stats">
           <span>关注: {{ userInfo.following_count || '0' }}</span>
           <span>粉丝: {{ userInfo.followers_count || '0' }}</span>
           <span>经验: {{ userInfo.experience || '0' }}</span>
         </div>
-        <el-button @click="toggleFollow" class="follow-btn">{{ isFollowing ? '取消关注' : '关注' }}</el-button>
+        <v-btn @click="toggleFollow" class="follow-btn">{{ isFollowing ? '取消关注' : '关注' }}</v-btn>
       </div>
     </mmCard>
     <VideoGrid :videos="videos" :hasMore="hasMoreVideos" @load-more="loadMore"/>
@@ -31,6 +25,7 @@ import { useUrlStore } from '@/store/urlStore';
 import useFormat from "@/composables/useFormat";
 import mmCard from '@/components/rzm/mmCard.vue';
 import VideoGrid from '@/components/video/VideoGrid.vue';
+import avatar from '@/components/user/avatar.vue';
 
 // 初始化URL存储和路由
 const urlStore = useUrlStore();
@@ -120,7 +115,6 @@ async function loadMore() {
 
 // 默认加载一次视频数据
 loadMore();
-
 </script>
 
 <style scoped>
@@ -152,13 +146,5 @@ loadMore();
 
 .follow-btn {
   margin-top: 10px;
-}
-
-.circle-face {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  overflow: hidden;
-  display: inline-block;
 }
 </style>
