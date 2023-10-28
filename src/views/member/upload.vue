@@ -142,22 +142,22 @@
 </template>
 
 <script setup>
-import { ref, watchEffect, reactive, toRaw } from 'vue';
-import { useStore } from 'vuex';
-import { v4 as uuidv4 } from 'uuid';
-
 import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
+import { ref, watchEffect, reactive, toRaw, computed } from 'vue';
+import { useUrlStore } from '@/store/urlStore';
 
-const store = useStore();
-const apiUrl = ref(store.state.apiUrl);
+// 初始化URL存储
+const urlStore = useUrlStore();
+const apiUrl = computed(() => urlStore.apiUrl);
 
+// 定义响应式数据和引用
 const showUploader = ref(true);
 const uploadProgress = ref(0);
 const isIndeterminateLoading = ref(false);
 const isSubmitting = ref(false);
 const showSuccessResult = ref(false);
 const uniqueId = uuidv4();
-
 const formData = reactive({
   title: '',
   filename: '',
@@ -168,16 +168,16 @@ const formData = reactive({
   origin: '',
   tags: []
 });
+const currentTag = ref('');
 
+// 处理视频来源变化
 const handleSourceChange = () => {
-  // 当选择"自制"时，清除出处字段
   if (formData.source === '自制') {
     formData.origin = '';
   }
 };
 
-const currentTag = ref(''); // 用于存储当前正在输入的标签
-
+// 定义标签验证规则
 const tagsRule = {
   validator(_, value, callback) {
     if (value.length < 3) {
@@ -189,6 +189,7 @@ const tagsRule = {
   trigger: 'blur'
 };
 
+// 定义禁止的标签
 const forbiddenTags = ["自制", "转载", "游戏", "生活", "知识", "科技", "音乐", "鬼畜", "动画", "时尚", "舞蹈", "娱乐", "美食", "动物"]
 const handleTagEnter = () => {
     // 1. 检查currentTag是否为空
@@ -227,12 +228,15 @@ const handleTagEnter = () => {
     currentTag.value = '';
 };
 
+// 处理标签关闭
 const handleTagClose = (index) => {
-  formData.tags.splice(index, 1); // 删除指定索引的标签
+  formData.tags.splice(index, 1);
 };
 
+// 定义分块大小
 const CHUNK_SIZE = 90 * 1024 * 1024; // 90MB
 
+// 处理视频分块
 const onFileChange = async (fileChangeEvent) => {
   const file = fileChangeEvent.raw;
 
@@ -321,12 +325,14 @@ const handleCoverSelection = (file) => {
   return false; // 阻止自动上传
 };
 
+// 监听上传器的变化
 watchEffect(() => {
   if (!showUploader.value) {
     isIndeterminateLoading.value = false;
   }
 });
 
+// 提交视频数据
 const submitVideo = async () => {
   // 在提交前检查标签数量
   if (formData.tags.length < 3) {
@@ -368,6 +374,7 @@ const submitVideo = async () => {
   isSubmitting.value = false; // 提交结束，无论成功或失败
 };
 
+// 返回主页函数
 const goBack = () => {
   location.reload(true);
   window.location.href = '/';

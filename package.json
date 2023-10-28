@@ -1,38 +1,40 @@
 {
   "name": "frontend",
-  "version": "0.1.0",
   "private": true,
+  "version": "beta.1.0.0",
+  "type": "module",
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.1.0",
+    "autoprefixer": "^10.4.16",
     "axios": "^1.5.1",
-    "core-js": "^3.8.3",
     "cropperjs": "^1.6.1",
-    "dplayer": "^1.27.1",
-    "element-plus": "^2.3.14",
+    "element-plus": "^2.4.1",
     "hls.js": "^1.4.12",
-    "i": "^0.3.7",
-    "socket.io-client": "^4.7.2",
+    "pinia": "^2.1.7",
+    "postcss": "^8.4.31",
+    "sass": "^1.69.4",
+    "tailwindcss": "^3.3.4",
     "uuid": "^9.0.1",
-    "vue": "^3.2.13",
+    "video.js": "^8.6.1",
+    "videojs-hlsjs-plugin": "^1.0.5",
+    "vite-plugin-vuetify": "^1.0.2",
+    "vue": "^3.3.4",
     "vue-cropperjs": "^5.0.0",
-    "vue-router": "^4.0.3",
-    "vuex": "^4.0.0"
+    "vue-router": "^4.0.13",
+    "vuetify": "^3.3.23"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "~5.0.0",
-    "@vue/cli-plugin-router": "~5.0.0",
-    "@vue/cli-plugin-vuex": "~5.0.0",
-    "@vue/cli-service": "~5.0.0",
+    "@mdi/font": "^7.3.67",
+    "@vitejs/plugin-vue": "^4.2.3",
+    "typescript": "^5.0.2",
     "unplugin-auto-import": "^0.16.6",
-    "unplugin-vue-components": "^0.25.2"
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead",
-    "not ie 11"
-  ]
+    "unplugin-vue-components": "^0.25.2",
+    "vite": "^4.4.5",
+    "vue-tsc": "^1.8.5"
+  }
 }

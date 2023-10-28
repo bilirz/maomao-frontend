@@ -1,11 +1,5 @@
 <template>
   <div>
-    <div class="tip custom-block">
-      <p class="custom-block-title">逐步放开限制</p>
-      <p class="custom-block-text">新投稿的视频不会被压缩成480p了, 音频也不会被压缩了</p>
-      <p class="custom-block-text">限制可以上传小于500M视频了</p>
-      <p class="custom-block-text"><el-link type="primary" href="https://v.bilirz.com/video/141" target="_blank">本次放开具体效果请看本视频画质与音质</el-link></p>
-    </div>
     <div v-if="showTencentTip" class="tip custom-block">
       <p class="custom-block-title">友情赞助</p>
       <p class="custom-block-text">非常感谢腾讯云轻量应用服务器(TencentCloud Lighthouse)提供服务器，让我一个高一学生也有机会上线网站。</p>
@@ -19,14 +13,14 @@
       <p class="custom-block-text">我的技术交流群：542174643</p>
       <el-link type="primary" @click="closeTip('qq')">关闭</el-link>
     </div>
-    
-    <VideoList />
+    <comment type="index"></comment>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import VideoList from '@/components/video/VideoList.vue';
+import comment from '@/components/common/comment.vue';
 
 
 const showTencentTip = ref(true);
@@ -37,7 +31,7 @@ onMounted(() => {
   const tencentCloseTime = localStorage.getItem('tencentTipCloseTime');
   const qqCloseTime = localStorage.getItem('qqTipCloseTime');
   const now = Date.now();
-  const twoDays = 48 * 60 * 60 * 1000; // 48小时
+  const twoDays = 72 * 60 * 60 * 1000; // 48小时
 
   if (tencentCloseTime && now - tencentCloseTime < twoDays) {
     showTencentTip.value = false;

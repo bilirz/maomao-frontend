@@ -1,5 +1,10 @@
+type Categories = {
+  [key: number]: string;
+};
+
+// 将时间戳改为 2023-01-01 12:00:00 格式
 export default function useFormat() {
-  const formatTimestamp = (timestamp) => {
+  const formatTimestamp = (timestamp: number): string => {
     let date = new Date(timestamp * 1000);
     let year = date.getFullYear();
     let month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -10,8 +15,10 @@ export default function useFormat() {
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   }
 
-  const getCategoryByValue = (value) => {
-    const categories = {
+
+// 将分区ID展示成分区
+  const getCategoryByValue = (value: number): string => {
+    const categories: Categories = {
       100: "游戏",
       200: "生活",
       300: "知识",
@@ -26,7 +33,7 @@ export default function useFormat() {
       1200: "动物"
     };
 
-    return categories[value] || "未知分区"; // 如果数字不在列表中，则返回"未知分区"
+    return categories[value] || "未知";
   }
 
   return { formatTimestamp, getCategoryByValue };

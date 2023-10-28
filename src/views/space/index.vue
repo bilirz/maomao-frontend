@@ -1,41 +1,40 @@
 <template>
-  <mmCard v-if="userInfo" title="个人空间" style="margin-bottom: 10px;">
-    <div>
-      <img 
-      :src="`${cosUrl}/face/${route.params.uid}.jpg`" 
-      alt="头像" 
-      class="circle-face"
-      @error="event => event.target.src='/default_face.png'" />
-    </div>
-    <div class="user-details">
-      <h2>{{ userInfo.name }}</h2>
-      <p class="timestamp"><el-icon><Clock /></el-icon> {{ formatTimestamp(userInfo.registration_time) }}</p>
-      <div class="follower-stats">
-        <span>关注: {{ userInfo.following_count || '0' }}</span>
-        <span>粉丝: {{ userInfo.followers_count || '0' }}</span>
-        <span>经验: {{ userInfo.experience || '0' }}</span>
+  <div>
+    <mmCard v-if="userInfo" title="个人空间">
+      <avatar :src="`${cosUrl}/face/${route.params.uid}.jpg`" size="80"></avatar>
+      <div class="user-details">
+        <h2>{{ userInfo.name }}</h2>
+        <p class="timestamp"><v-icon>mdi-clock-outline</v-icon> {{ formatTimestamp(userInfo.registration_time) }}</p>
+        <div class="follower-stats">
+          <span>关注: {{ userInfo.following_count || '0' }}</span>
+          <span>粉丝: {{ userInfo.followers_count || '0' }}</span>
+          <span>经验: {{ userInfo.experience || '0' }}</span>
+        </div>
+        <v-btn @click="toggleFollow" class="follow-btn">{{ isFollowing ? '取消关注' : '关注' }}</v-btn>
       </div>
-      <el-button @click="toggleFollow" class="follow-btn">{{ isFollowing ? '取消关注' : '关注' }}</el-button>
-    </div>
-  </mmCard>
-  <VideoGrid :videos="videos" :hasMore="hasMoreVideos" @load-more="loadMore"/>
+    </mmCard>
+    <VideoGrid :videos="videos" :hasMore="hasMoreVideos" @load-more="loadMore"/>
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useStore } from 'vuex';
-import { useRoute } from 'vue-router';
 import axios from 'axios';
-import mmCard from '@/components/rzm/mmCard.vue';
+import { ref, onMounted, computed } from 'vue';
+import { useRoute } from 'vue-router';
+import { useUrlStore } from '@/store/urlStore';
 import useFormat from "@/composables/useFormat";
+import mmCard from '@/components/rzm/mmCard.vue';
 import VideoGrid from '@/components/video/VideoGrid.vue';
+import avatar from '@/components/user/avatar.vue';
 
-const store = useStore();
+// 初始化URL存储和路由
+const urlStore = useUrlStore();
 const route = useRoute();
-const apiUrl = ref(store.state.apiUrl);
-const cosUrl = ref(store.state.cosUrl);
+const apiUrl = computed(() => urlStore.apiUrl);
+const cosUrl = computed(() => urlStore.cosUrl);
 const { formatTimestamp } = useFormat();
 
+// 定义相关的引用和变量
 const userInfo = ref(null);
 const hasMoreVideos = ref(true);
 const videos = ref([]);
@@ -44,6 +43,7 @@ let isLoading = false;
 const isAllDataLoaded = ref(false);
 const isFollowing = ref(false);
 
+// 切换关注状态的函数
 async function toggleFollow() {
   try {
     const response = await axios.post(`${apiUrl.value}/api/space/follow/${route.params.uid}`);
@@ -51,18 +51,17 @@ async function toggleFollow() {
     if (response.data) {
       if (response.data.state == "succeed") {
         ElMessage({
-        message: '关注成功',
-        type: 'succeed',
+          message: '关注成功',
+          type: 'succeed',
         });
         isFollowing.value = !isFollowing.value;
       } else {
         ElMessage({
-        message: response.data.message,
-        type: 'warning',
+          message: response.data.message,
+          type: 'warning',
         });
       }
     }
-
   } catch (error) {
     ElMessage({
       message: error,
@@ -71,29 +70,21 @@ async function toggleFollow() {
   }
 }
 
+// 组件挂载后的操作
 onMounted(async () => {
   try {
-    // 获取用户信息
     const userResponse = await axios.get(`${apiUrl.value}/api/space/${route.params.uid}`);
     userInfo.value = userResponse.data;
 
-  } catch (error) {
-    ElMessage({
-      message: error,
-      type: 'error',
-    });
-  }
+  } catch (error) {}
+  
   try {
     const response = await axios.get(`${apiUrl.value}/api/space/is_following/${route.params.uid}`);
     isFollowing.value = response.data.isFollowing;
-  } catch (error) {
-    ElMessage({
-      message: error,
-      type: 'error',
-    });
-  }
+  } catch (error) {}
 });
 
+// 加载更多视频的函数
 async function loadMore() {
   if (isLoading || isAllDataLoaded.value) return;
 
@@ -122,8 +113,8 @@ async function loadMore() {
   }
 }
 
+// 默认加载一次视频数据
 loadMore();
-
 </script>
 
 <style scoped>
@@ -155,13 +146,5 @@ loadMore();
 
 .follow-btn {
   margin-top: 10px;
-}
-
-.circle-face {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  overflow: hidden;
-  display: inline-block;
 }
 </style>

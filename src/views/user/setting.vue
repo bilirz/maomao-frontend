@@ -68,33 +68,37 @@
 
 
 <script setup>
-import { ref, reactive, computed } from 'vue';
-import { useStore } from 'vuex';
 import axios from 'axios';
-import 'cropperjs/dist/cropper.css';
 import VueCropper from 'vue-cropperjs';
+import 'cropperjs/dist/cropper.css';
+import { ref, reactive, computed } from 'vue';
+import { useUserStore } from '@/store/userStore';
+import { useUrlStore } from '@/store/urlStore';
 
-const cropperVisible = ref(false);
-const finalfaceImage = ref(null);
+const cropperVisible = ref(false);  // 控制裁剪器的显示状态
+const finalfaceImage = ref(null);   // 最终裁剪后的图像
 
-const store = useStore();
-const apiUrl = ref(store.state.apiUrl);
-const cosUrl = computed(() => store.state.cosUrl);
-const sessionData = computed(() => store.state.sessionData);
+const userStore = useUserStore();
+const urlStore = useUrlStore();
+const apiUrl = computed(() => urlStore.apiUrl);
+const cosUrl = computed(() => urlStore.cosUrl);
+const sessionData = computed(() => userStore.sessionData);
 const cropperRef = ref();
-const isSubmitting = ref(false);
-const showSuccessResult = ref(false);
-
+const isSubmitting = ref(false);    // 控制提交的状态，以便于显示提交过程中的动画或阻止多次点击
+const showSuccessResult = ref(false);   // 控制显示成功结果的状态
 
 const formData = reactive({
   name: sessionData.value.name,
   faceFile: null,
 });
 
+// 计算默认的头像URL
 const defaultfaceUrl = computed(() => `${cosUrl.value}/face/${sessionData.value.uid}.jpg`);
 if (!finalfaceImage.value) {
   finalfaceImage.value = defaultfaceUrl.value;
 }
+
+// 预览用户选择的头像
 const faceImagePreview = ref(null);
 const handlefaceSelection = (file) => {
   if (file.size / 1024 / 1024 > 5) {
@@ -113,6 +117,7 @@ const handlefaceSelection = (file) => {
   return false; // 阻止自动上传
 };
 
+// 裁剪图像的函数
 const cropImage = () => {
   const cropper = cropperRef.value.cropper;
   const canvas = cropper.getCroppedCanvas();
@@ -129,9 +134,10 @@ const cropImage = () => {
   faceImagePreview.value = null;
 };
 
-// 防止裁剪器缓存
+// 用于防止裁剪器缓存的Key
 const cropperKey = ref(0);
 
+// 处理对话框关闭的函数
 const handleDialogClose = (val) => {
   cropperVisible.value = val;
   if (!val) {  
@@ -140,6 +146,7 @@ const handleDialogClose = (val) => {
   }
 };
 
+// 更新用户资料的函数
 const updateProfile = async () => {
   isSubmitting.value = true;
   const formDataToSend = new FormData();
@@ -180,10 +187,12 @@ const updateProfile = async () => {
   }
 };
 
+// 返回主页的函数
 const goBack = () => {
   location.reload(true);
   window.location.href = '/';
 };
+
 </script>
 
 <style>

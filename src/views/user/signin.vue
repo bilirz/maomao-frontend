@@ -31,13 +31,13 @@
 
 <script setup>
 import { reactive, computed, ref } from 'vue'
-import { useStore } from 'vuex';
+import { useUrlStore } from '@/store/urlStore';
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import mmCard from '@/components/rzm/mmCard.vue';
 
-const store = useStore();
-const apiUrl = computed(() => store.state.apiUrl);
+const urlStore = useUrlStore();
+const apiUrl = computed(() => urlStore.apiUrl);
 
 const urouter = useRouter();
 const goToSignup = () => {
