@@ -1,6 +1,5 @@
 <template>
   <div>
-    <VideoList />
     <div v-if="showTencentTip" class="tip custom-block">
       <p class="custom-block-title">友情赞助</p>
       <p class="custom-block-text">非常感谢腾讯云轻量应用服务器(TencentCloud Lighthouse)提供服务器，让我一个高一学生也有机会上线网站。</p>
