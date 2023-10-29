@@ -13,6 +13,16 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/log.vue')
   },
   {
+    path: '/about',
+    name: '关于本网站',
+    component: () => import('@/views/about.vue')
+  },
+  {
+    path: '/faq',
+    name: 'FAQ',
+    component: () => import('@/views/faq.vue')
+  },
+  {
     path: '/member',
     name: '创作中心',
     component: () => import('@/views/fatherContainer.vue'),

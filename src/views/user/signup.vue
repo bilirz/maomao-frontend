@@ -182,6 +182,7 @@ const submitForm = (formEl) => {
     axios.post(`${apiUrl.value}/api/user/signup`, {
       email: formData.email,
       name: formData.name,
+      auth: formData.auth,
       password: formData.password
     })
     .then(response => {
