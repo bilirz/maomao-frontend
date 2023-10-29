@@ -180,6 +180,9 @@ onMounted(async () => {
       type: 'application/x-mpegURL'
     }]
   });
+  player.on('play', () => {
+    incrementViewCount();
+  });
   }, 1000);
 });
 

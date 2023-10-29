@@ -24,13 +24,13 @@
           
           <v-col>
             <div class="user-name">{{ sessionData.name }}</div>
-            <div class="user-uid">{{ sessionData.uid }}</div>
+            <div class="user-uid">UID：{{ sessionData.uid }}</div>
           </v-col>
         </v-row>
         <v-row>
           <v-col>
-            <div>经验：{{ sessionData.checkin.experience || 0 }}</div>
-            <div>积分：{{ sessionData.checkin.points || 0 }}</div>
+            <div>经验：{{ (sessionData.checkin.experience || 0).toFixed(2) }}</div>
+            <div>积分：{{ (sessionData.checkin.points || 0).toFixed(2) }}</div>
           </v-col>
         </v-row>
       </mmvCard>
@@ -102,7 +102,9 @@ const closeDrawer = () => {
 const items = computed(() => {
   const baseItems = [
     { text: '主页', icon: 'mdi-inbox', to: '/' },
-    { text: '开发日志', icon: 'mdi-timeline', to: '/log' }
+    { text: '关于本网站', icon: 'mdi-information', to: '/about' },
+    { text: 'FAQ', icon: 'mdi-frequently-asked-questions', to: '/faq' },
+    { text: '开发日志', icon: 'mdi-timeline', to: '/log' },
   ];
   
   if (!sessionData.value.signin) {

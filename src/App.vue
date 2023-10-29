@@ -1,5 +1,9 @@
 <template>
-  <div>
+  <v-lazy
+    :min-height="200"
+    :options="{'threshold':0.5}"
+    transition="fade-transition"
+  >
     <navBar>
       <v-container>
         <v-row justify="center">
@@ -38,7 +42,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </div>
+  </v-lazy>
 </template>
 
 <script setup>

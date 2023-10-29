@@ -1,7 +1,7 @@
 <template>
-  <v-row style="margin-top: 10px; margin-bottom: 10px;" class="video-container">
-    <v-col v-for="video in videos" :key="video.aid" cols="6" md="4" lg="4" class="no-spacing-small-screens">
-      <v-card @click="handleCardClick($event, video)" style="padding: 10px;">
+  <v-row style="margin-top: 10px; margin-bottom: 10px;" class="video-container d-flex">
+    <v-col v-for="video in videos" :key="video.aid" cols="6" md="4" lg="4" class="no-spacing-small-screens col-height d-flex flex-column">
+      <v-card @click="handleCardClick($event, video)" class="full-height d-flex flex-column" style="padding: 10px; flex-grow: 1;">
         <div v-if="!video.hidden || !video.hidden.is_hidden" class="image-wrapper">
           <v-img :src="getVideoCover(video.aid)" class="image" />
           <v-badge color="grey" content-class="play-count-content" overlap left bottom>
@@ -17,7 +17,7 @@
         <v-card-title class="multiline-title">
           {{ video.title }}
         </v-card-title>
-        <v-card-subtitle>
+        <v-card-subtitle class="mt-auto">
           <v-row class="no-gutters">
             <v-col>
               <v-icon icon="mdi-account-box" style="margin-right: 10px;" />{{ video.uploader_name }}
@@ -109,8 +109,8 @@ function emitLoadMore() {
   .no-spacing-small-screens{
     padding: 4px  !important;
   }
-  .video-container * { /* 选择video-container类下的所有子元素 */
-      font-size: 14px; /* 例如，设置字体大小为14px */
+  .video-container * {
+    font-size: 14px;
   }
 }
 
@@ -118,4 +118,10 @@ function emitLoadMore() {
   white-space: normal !important;
   overflow: visible !important;
 }
+
+.video-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 </style>

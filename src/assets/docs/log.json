@@ -44,12 +44,23 @@
     "stage": "beta",
     "version": "1.0.0",
     "dotColor": "red",
-    "date": "2023-10-21",
+    "date": "2023-10-28",
     "size": "large",
     "changes": {
       "feature": ["加入了更好看的导航栏与侧边栏", "加入了主页留言板", "加入了开发日志"],
       "beautify": ["使用vuetify代替element-plus，全局美化"],
       "architecture": ["使用pinia代替vuex", "使用TypeScript代替JavaScript", "使用vite代替webpack"]
+    }
+  },
+  {
+    "stage": "beta",
+    "version": "1.0.1",
+    "dotColor": "green",
+    "date": "2023-10-29",
+    "size": "small",
+    "changes": {
+      "feature": ["加入了关于本网站和FAQ页面"],
+      "other": ["优化经验系统"]
     }
   }
 ]
