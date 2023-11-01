@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     Avatar: typeof import('./src/components/user/avatar.vue')['default']
     Comment: typeof import('./src/components/common/comment.vue')['default']
+    DataCount: typeof import('./src/components/dataCount.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCol: typeof import('element-plus/es')['ElCol']
     ElDialog: typeof import('element-plus/es')['ElDialog']

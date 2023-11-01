@@ -1,26 +1,29 @@
 <template>
-  <v-timeline side="end" align="start" >
-    <!-- 代表一个版本的更新 -->
-    <v-timeline-item :dot-color="update.dotColor" :size="update.size" v-for="update in updates"  :key="update.version" min-width="100%">
-      <div>
-        <strong style="color: #333;">Ver.{{ update.stage }}.{{ update.version }}&nbsp;&nbsp;&nbsp;&nbsp;{{ update.date }}</strong>
-        
-        <mmvCard style="width: 100%; max-width: 100%;">
-          <template v-slot:default>
-            <div v-for="(contents, category) in update.changes" :key="category">
-              <div style="margin-top: 10px; margin-bottom: 10px; margin-left: -7px; color: #555; font-size: 13px;">
-                  <v-icon :left="true" style="margin-right: 10px;">{{ categoryIconMap[category] }}</v-icon>
-                  <strong>{{ categoryMap[category] }}</strong>
+  <div>
+    <v-timeline side="end" align="start" >
+      <!-- 代表一个版本的更新 -->
+      <v-timeline-item :dot-color="update.dotColor" :size="update.size" v-for="update in updates"  :key="update.version" min-width="100%">
+        <div>
+          <strong style="color: #333;">Ver.{{ update.stage }}.{{ update.version }}&nbsp;&nbsp;&nbsp;&nbsp;{{ update.date }}</strong>
+          
+          <mmvCard style="width: 100%; max-width: 100%;">
+            <template v-slot:default>
+              <div v-for="(contents, category) in update.changes" :key="category">
+                <div style="margin-top: 10px; margin-bottom: 10px; margin-left: -7px; color: #555; font-size: 13px;">
+                    <v-icon :left="true" style="margin-right: 10px;">{{ categoryIconMap[category] }}</v-icon>
+                    <strong>{{ categoryMap[category] }}</strong>
+                </div>
+                <ul style="margin-left: 20px;">
+                  <li style="color: #777;" v-for="content in contents" :key="content">{{ content }}</li>
+                </ul>
               </div>
-              <ul style="margin-left: 20px;">
-                <li style="color: #777;" v-for="content in contents" :key="content">{{ content }}</li>
-              </ul>
-            </div>
-          </template>
-        </mmvCard>
-      </div>
-    </v-timeline-item>
-  </v-timeline>
+            </template>
+          </mmvCard>
+        </div>
+      </v-timeline-item>
+    </v-timeline>
+    <comment type="log" style="margin-top: 20px;"></comment>
+  </div>
 </template>
 
 <script setup>

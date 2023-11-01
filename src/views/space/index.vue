@@ -3,12 +3,12 @@
     <mmCard v-if="userInfo" title="个人空间">
       <avatar :src="`${cosUrl}/face/${route.params.uid}.jpg`" size="80"></avatar>
       <div class="user-details">
-        <h2>{{ userInfo.name }}</h2>
+        <h2>#{{ userInfo.exp_rank }} / {{ userInfo.name }}</h2>
         <p class="timestamp"><v-icon>mdi-clock-outline</v-icon> {{ formatTimestamp(userInfo.registration_time) }}</p>
         <div class="follower-stats">
           <span>关注: {{ userInfo.following_count || '0' }}</span>
           <span>粉丝: {{ userInfo.followers_count || '0' }}</span>
-          <span>经验: {{ userInfo.experience || '0' }}</span>
+          <span>经验: {{ (userInfo.experience || '0').toFixed(1) }}</span>
         </div>
         <v-btn @click="toggleFollow" class="follow-btn">{{ isFollowing ? '取消关注' : '关注' }}</v-btn>
       </div>
@@ -92,16 +92,16 @@ async function loadMore() {
 
   try {
     const response = await axios.get(`${apiUrl.value}/api/space/videos/${route.params.uid}`, {
-      params: { start: currentAid.value, count: 10 }
+      params: { start: currentAid.value, count: 8 }
     });
     if (response.data.hasMore === false) {
       hasMoreVideos.value = false;
     }
     videos.value.push(...response.data.data);
-    if (response.data.length < 10) {
+    if (response.data.length < 8) {
       isAllDataLoaded.value = true;
     } else {
-      currentAid.value += 10;
+      currentAid.value += 8;
     }
   } catch (error) {
     ElMessage({

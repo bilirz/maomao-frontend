@@ -12,7 +12,7 @@
   {
     "stage": "alpha",
     "version": "0.1.0",
-    "dotColor": "green",
+    "dotColor": "blue",
     "date": "2023-10-14",
     "size": "small",
     "changes": {
@@ -23,7 +23,7 @@
   {
     "stage": "alpha",
     "version": "0.2.0",
-    "dotColor": "green",
+    "dotColor": "blue",
     "date": "2023-10-19",
     "size": "small",
     "changes": {
@@ -60,7 +60,19 @@
     "size": "small",
     "changes": {
       "feature": ["加入了关于本网站和FAQ页面"],
-      "other": ["优化经验系统"]
+      "other": ["优化经验系统", "优化了session持续时间"]
+    }
+  },
+  {
+    "stage": "beta",
+    "version": "1.1.0",
+    "dotColor": "blue",
+    "date": "2023-11-01",
+    "size": "small",
+    "changes": {
+      "feature": ["加入了喜闻乐见的排行榜功能", "添加了网站访问量统计公共页面", "首页视频选择新增随机、入站必刷页面"],
+      "beautify": ["美化了首页视频卡片与导航栏", "美化了加载页面", "美化了广告内容"],
+      "fix": ["修复了部分页面不能评论的bug", "修复了部分页面不能评论的bug", "修复了经验精度错误", "修复了竖屏竖屏电脑端显示问题"]
     }
   }
 ]

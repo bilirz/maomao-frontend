@@ -6,6 +6,7 @@
       <li>发布评论消耗0.2积分，发布视频消耗1积分，修改头像或名字消耗5积分。</li>
       <li>视频被点赞可增加10积分，在自己的视频下评论不增加积分。</li>
     </mmCard>
+    <comment type="faq" style="margin-top: 20px;"></comment>
   </div>
 </template>
 

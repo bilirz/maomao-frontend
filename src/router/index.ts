@@ -23,6 +23,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/faq.vue')
   },
   {
+    path: '/data',
+    name: '网站可公开数据',
+    component: () => import('@/views/webData.vue')
+  },
+  {
     path: '/member',
     name: '创作中心',
     component: () => import('@/views/fatherContainer.vue'),
@@ -57,6 +62,11 @@ const routes: RouteRecordRaw[] = [
         name: '修改个人信息',
         meta: { layout: 'form' },
         component: () => import('@/views/user/setting.vue')
+      },
+      {
+        path: 'rank',
+        name: '喵绘者排行',
+        component: () => import('@/views/user/rank.vue')
       }
     ]
   },

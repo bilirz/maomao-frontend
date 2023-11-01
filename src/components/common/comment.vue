@@ -8,7 +8,7 @@
         <mmvCard>
           <v-list-item>
             <v-list-item-title>
-              <strong>{{ comment.username }}</strong>
+              <strong>#{{ comment.exp_rank }} / {{ comment.username }}</strong>
               <span class="floor-number">{{ comment.floor }}楼</span>
             </v-list-item-title>
             <v-list-item-subtitle>{{ formatTimestamp(comment.time) }}</v-list-item-subtitle>
@@ -25,7 +25,7 @@
           </v-list-item>
           <v-list-item v-if="comment.replies.length > 0" v-for="reply in comment.replies" :key="reply._id">
             <v-list-item-title>
-              <strong>{{ reply.username }}</strong>
+              <strong>#{{ reply.exp_rank }} / {{ reply.username }}</strong>
               <span class="floor-number">{{ reply.floor }}楼</span>
             </v-list-item-title>
             <v-list-item-subtitle>{{ formatTimestamp(reply.time) }}</v-list-item-subtitle>
@@ -159,3 +159,11 @@ onMounted(() => {
   loadComments();
 });
 </script>
+
+<style scoped>
+.floor-number {
+  font-size: 0.8em;
+  color: #888;
+  margin-left: 7px;
+}
+</style>

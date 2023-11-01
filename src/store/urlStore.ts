@@ -6,7 +6,7 @@ export const useUrlStore = defineStore({
   state: () => ({
     // apiUrl: 'http://localhost:5000',
     // cosUrl: 'https://cos-test.bilirz.com',
-    apiUrl: 'https://v.bilirz.com',
+    apiUrl: `${window.location.protocol}//${window.location.host}`,
     cosUrl: 'https://cos.bilirz.com',
   })
 });

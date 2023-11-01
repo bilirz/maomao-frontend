@@ -1,9 +1,5 @@
 <template>
-  <v-lazy
-    :min-height="200"
-    :options="{'threshold':0.5}"
-    transition="fade-transition"
-  >
+  <div>
     <navBar>
       <v-container>
         <v-row justify="center">
@@ -20,7 +16,7 @@
     </navBar>
     <v-dialog v-model="showUpdateLog" max-width="600px">
       <v-card>
-        <v-card-title style="color: #61aefb;">
+        <v-card-title style="color: #61aefb; font-size: bold;">
           最新更新 - {{ latestUpdate.stage }}{{ latestUpdate.version }}
         </v-card-title>
         <v-card-text>
@@ -42,18 +38,24 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-lazy>
+  </div>
 </template>
 
 <script setup>
 import axios from 'axios';
 import { useRoute } from 'vue-router';
-import { ref, onMounted, computed } from 'vue';
+import { useUrlStore } from '@/store/urlStore';
+import { ref, onMounted, computed, onUnmounted, provide } from 'vue';
 import navBar from '@/components/navBar.vue';
 import logs from '@/assets/docs/log.json';
 
 const route = useRoute();
+
+const urlStore = useUrlStore();
+const apiUrl = computed(() => urlStore.apiUrl);
+
 axios.defaults.withCredentials = true;
+
 
 const showUpdateLog = ref(false);
 const latestUpdate = logs[logs.length - 1];
@@ -80,16 +82,21 @@ const categoryIconMap = {
   other: 'mdi-dots-horizontal'
 };
 
-onMounted(() => {
-  const lastSeenUpdate = localStorage.getItem('lastSeenUpdate');
-
-  if (!lastSeenUpdate || lastSeenUpdate !== latestUpdate.version) {
-    showUpdateLog.value = true;
-  }
-});
-
 const closeUpdateLog = () => {
   showUpdateLog.value = false;
   localStorage.setItem('lastSeenUpdate', latestUpdate.version);
 };
+
+onMounted(() => {
+  const lastSeenUpdate = localStorage.getItem('lastSeenUpdate');
+  if (!lastSeenUpdate || lastSeenUpdate !== latestUpdate.version) {
+    showUpdateLog.value = true;
+  }
+
+  axios.post(`${apiUrl.value}/api/online/visited`).then(response => {
+    console.log(response.data.message);
+  }).catch(error => {
+    console.error("统计访问错误:", error);
+  });
+});
 </script>

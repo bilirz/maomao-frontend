@@ -1,27 +1,30 @@
 <template>
   <div>
-    <div v-if="showTencentTip" class="tip custom-block">
+    <VideoList />
+    <!-- <div v-if="showTencentTip" class="tip custom-block">
       <p class="custom-block-title">友情赞助</p>
       <p class="custom-block-text">非常感谢腾讯云轻量应用服务器(TencentCloud Lighthouse)提供服务器，让我一个高一学生也有机会上线网站。</p>
       <p class="custom-block-text"><el-link type="primary" href="https://curl.qcloud.com/mzc5gXg0" target="_blank">点击这里领取本网站优惠购买轻量应用服务器</el-link></p>
       <el-link type="primary" @click="closeTip('tencent')">关闭</el-link>
     </div>
-    
     <div v-if="showQQTip" class="tip custom-block-qq">
       <p class="custom-block-title">QQ群</p>
       <p class="custom-block-text">我的粉丝QQ群：883422705</p>
       <p class="custom-block-text">我的技术交流群：542174643</p>
       <el-link type="primary" @click="closeTip('qq')">关闭</el-link>
-    </div>
+    </div> -->
+
     <comment type="index"></comment>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, inject } from 'vue';
 import VideoList from '@/components/video/VideoList.vue';
+import mmCard from '@/components/rzm/mmCard.vue';
 import comment from '@/components/common/comment.vue';
 
+// const onlineCount = inject('onlineCount');
 
 const showTencentTip = ref(true);
 const showQQTip = ref(true);

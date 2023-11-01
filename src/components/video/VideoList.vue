@@ -1,15 +1,23 @@
 <template>
   <div>
-    <v-tabs v-model="tab">
-      <v-tab value="home">首页</v-tab>
+    <v-tabs v-model="tab" class="custom-tabs">
+      <v-tab value="random">随机</v-tab>
+      <v-tab value="history">历史</v-tab>
       <v-tab value="hot">热门</v-tab>
+      <v-tab value="must">入站必刷</v-tab>
     </v-tabs>
     <v-window v-model="tab">
-      <v-window-item value="home">
-        <VideoGrid :videos="videos" :hasMore="hasMoreVideos" @load-more="() => loadMore('home')" />
+      <v-window-item value="random">
+        <VideoGrid :videos="videos" :hasMore="hasMoreVideos" @load-more="() => loadMore('random')" />
+      </v-window-item>
+      <v-window-item value="history">
+        <VideoGrid :videos="videos" :hasMore="hasMoreVideos" @load-more="() => loadMore('history')" />
       </v-window-item>
       <v-window-item value="hot">
         <VideoGrid :videos="videos" :hasMore="hasMoreVideos" @load-more="() => loadMore('hot')" />
+      </v-window-item>
+      <v-window-item value="must">
+        <VideoGrid :videos="videos" :hasMore="hasMoreVideos" @load-more="() => loadMore('must')" />
       </v-window-item>
     </v-window>
   </div>
@@ -43,24 +51,49 @@ function resetVideosData() {
   hasMoreVideos.value = true;
 }
 
-async function loadMore(type = 'home') {
+async function loadMore(type = 'random') {
   if (isLoading || isAllDataLoaded.value) return;
 
   isLoading = true;
-  const endpoint = type === 'home' ? '/api/video/list' : '/api/video/hot-list';
+  
+  let endpoint = '';
+  const params = { start: currentAid.value, count: 8 };
+
+  switch(type) {
+    case 'random':
+      endpoint = '/api/video/list';
+      params.sort_by = 'random';
+      break;
+    case 'history':
+      endpoint = '/api/video/list';
+      params.sort_by = 'time';
+      break;
+    case 'hot':
+      endpoint = '/api/video/hot-list';
+      params.within_two_weeks = true;
+      break;
+    case 'must':
+      endpoint = '/api/video/hot-list';
+      params.within_two_weeks = false;
+      break;
+    default:
+      console.error(`Unknown type: ${type}`);
+      isLoading = false;
+      return;
+  }
 
   try {
     const response = await axios.get(`${apiUrl.value}${endpoint}`, {
-      params: { start: currentAid.value, count: 6 }
+      params: params
     });
     if (response.data.hasMore === false) {
       hasMoreVideos.value = false;
     }
     videos.value.push(...response.data.data);
-    if (response.data.length < 6) {
+    if (response.data.length < 8) {
       isAllDataLoaded.value = true;
     } else {
-      currentAid.value += 6;
+      currentAid.value += 8;
     }
   } catch (error) {
     console.error("获取视频错误:", error);
@@ -71,3 +104,11 @@ async function loadMore(type = 'home') {
 
 loadMore();
 </script>
+
+<style scoped>
+.custom-tabs {
+  background-color: #ffffff;
+  border-radius: 5px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+}
+</style>
