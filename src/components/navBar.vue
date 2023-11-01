@@ -29,23 +29,29 @@
         </v-row>
         <v-row>
           <v-col>
-            <div>经验：{{ (sessionData.checkin.experience || 0).toFixed(2) }}</div>
-            <div>积分：{{ (sessionData.checkin.points || 0).toFixed(2) }}</div>
+            <div>经验：{{ (sessionData.checkin.experience || 0).toFixed(1) }} (#{{ sessionData.checkin.exp_rank }})</div>
+            <div>积分：{{ (sessionData.checkin.points || 0).toFixed(1) }}</div>
           </v-col>
         </v-row>
       </mmvCard>
       <v-list @click="closeDrawer">
       
-      <v-list-item v-for="(item, i) in items" :key="i" :value="item" rounded="xl" :to="item.to">
-        <template v-slot:prepend>
-          <v-icon :icon="item.icon"></v-icon>
-        </template>
+        <v-list-item v-for="(item, i) in items" :key="i" :value="item" rounded="xl" :to="item.to">
+          <template v-slot:prepend>
+            <v-icon :icon="item.icon"></v-icon>
+          </template>
 
-        <v-list-item-title v-text="item.text"></v-list-item-title>
-      </v-list-item>
-    </v-list>
+          <v-list-item-title v-text="item.text"></v-list-item-title>
+        </v-list-item>
+      </v-list>
+      <div class="footer-section">
+        <div class="footer-content">
+            技术交流群: 542174643<br>
+            粉丝与网站讨论群: 883422705<br>
+            <el-link type="primary" href="https://curl.qcloud.com/mzc5gXg0" target="_blank">腾讯云轻量应用服务器真的非常好用</el-link><br>
+        </div>
+      </div>
     </v-navigation-drawer>
-
     <v-main>
       <slot></slot>
     </v-main>
@@ -102,8 +108,10 @@ const closeDrawer = () => {
 const items = computed(() => {
   const baseItems = [
     { text: '主页', icon: 'mdi-inbox', to: '/' },
+    { text: '喵绘者排行', icon: 'mdi-airplane', to: '/user/rank' },
     { text: '关于本网站', icon: 'mdi-information', to: '/about' },
     { text: 'FAQ', icon: 'mdi-frequently-asked-questions', to: '/faq' },
+    { text: '可公开数据', icon: 'mdi-chart-donut', to: '/data' },
     { text: '开发日志', icon: 'mdi-timeline', to: '/log' },
   ];
   
@@ -171,5 +179,18 @@ onMounted(fetchCheckInStatus);
 .user-uid {
   color: grey;
   font-size: 14px;
+}
+
+.footer-section {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  z-index: 10;
+  color: #555;
+  font-size: 14px;
+}
+
+.footer-content {
+  text-align: center;
 }
 </style>

@@ -1,32 +1,22 @@
 <template>
-  <v-row style="margin-top: 10px; margin-bottom: 10px;" class="video-container d-flex">
-    <v-col v-for="video in videos" :key="video.aid" cols="6" md="4" lg="4" class="no-spacing-small-screens col-height d-flex flex-column">
-      <v-card @click="handleCardClick($event, video)" class="full-height d-flex flex-column" style="padding: 10px; flex-grow: 1;">
+  <v-row class="video-container d-flex" style="margin-top: 10px; margin-bottom: 10px;">
+    <v-col v-for="video in videos" :key="video.aid" cols="6" md="3" lg="3" class="video-col">
+      <v-card @click="handleCardClick($event, video)" class="video-card">
         <div v-if="!video.hidden || !video.hidden.is_hidden" class="image-wrapper">
           <v-img :src="getVideoCover(video.aid)" class="image" />
-          <v-badge color="grey" content-class="play-count-content" overlap left bottom>
-            <template v-slot:badge>
-              &nbsp;&nbsp;&nbsp;<v-icon icon="mdi-thumb-up" style="margin-right: 10px;" />{{ video.data.like || '0' }}
-            </template>
-          </v-badge>
+          <div class="video-overlay">
+            <div class="video-info">
+              <span style="padding-right: 20px;" class="white-text"><v-icon icon="mdi-play-box" class="icon" />{{ video.data.view || '0' }}</span>
+              <span style="padding-right: 20px;" class="white-text"><v-icon icon="mdi-thumb-up" class="icon" />{{ video.data.like || '0' }}</span>
+              <span class="white-text"><v-icon icon="mdi-account-box" class="icon"/>{{ video.uploader_name }}</span>
+            </div>
+          </div>
         </div>
         <div v-else class="banned-info">
           <p>很抱歉，{{ video.hidden.reason }}</p>
           <p>操作人：{{ video.hidden.operator_name }}</p>
         </div>
-        <v-card-title class="multiline-title">
-          {{ video.title }}
-        </v-card-title>
-        <v-card-subtitle class="mt-auto">
-          <v-row class="no-gutters">
-            <v-col>
-              <v-icon icon="mdi-account-box" style="margin-right: 10px;" />{{ video.uploader_name }}
-            </v-col>
-            <v-col>
-              <v-icon icon="mdi-play-box" style="margin-right: 10px;" />{{ video.data.view || '0' }}
-            </v-col>
-          </v-row>
-        </v-card-subtitle>
+        <v-card-title class="multiline-title">{{ video.title }}</v-card-title>
       </v-card>
     </v-col>
     <v-col v-if="hasMore" cols="12" class="text-center">
@@ -77,10 +67,18 @@ function emitLoadMore() {
 </script>
 
 <style scoped>
-.image-wrapper {
-  width: 100%;
-  padding-bottom: 56.25%;
+.video-col {
+  padding: 5px;
+}
+
+.video-card {
   position: relative;
+  cursor: pointer;
+}
+
+.image-wrapper {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 */
   overflow: hidden;
 }
 
@@ -90,7 +88,33 @@ function emitLoadMore() {
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  transition: all 0.3s ease;
+}
+
+.video-card:hover .image {
+  transform: scale(1.05);
+}
+
+.video-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+}
+
+.white-text {
+  color: white;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.icon {
+  margin-right: 5px;
+}
+
+.video-info {
+  font-size: 12px;
 }
 
 .banned-info {

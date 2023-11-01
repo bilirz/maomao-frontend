@@ -34,6 +34,7 @@
       <h4>CDN</h4>
       <li>使用了Cloudflare CDN Free计划。</li>
     </mmCard>
+    <comment type="about" style="margin-top: 20px;"></comment>
   </div>
 </template>
 <script setup>
