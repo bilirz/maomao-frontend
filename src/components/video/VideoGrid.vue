@@ -16,7 +16,7 @@
           <p>很抱歉，{{ video.hidden.reason }}</p>
           <p>操作人：{{ video.hidden.operator_name }}</p>
         </div>
-        <v-card-title class="multiline-title">{{ video.title }}</v-card-title>
+        <v-card-title class="multiline-title truncate-title">{{ video.title }}</v-card-title>
       </v-card>
     </v-col>
     <v-col v-if="hasMore" cols="12" class="text-center">
@@ -74,6 +74,22 @@ function emitLoadMore() {
 .video-card {
   position: relative;
   cursor: pointer;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.video-card > div {
+  flex: 1;
+}
+
+.truncate-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  font-size: 15px;
+  color: #555
 }
 
 .image-wrapper {

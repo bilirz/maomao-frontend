@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-row>
-      <v-col v-for="user in users" :key="user.uid" xs="12" sm="6" md="4" lg="3">
+      <v-col v-for="user in users" :key="user.uid" xs="12" sm="12" md="4" lg="3" class="no-spacing-small-screens row-equal-height">
         <div class="card-wrapper">
           <span class="user-rank">#{{ user.rank }}</span>
           <mmvCard>
@@ -70,6 +70,9 @@ onMounted(async () => {
   .user-rank {
     padding: 4px 8px;
   }
+  .no-spacing-small-screens{
+    padding: 4px  !important;
+  }
 }
 
 /* 媒体查询，针对更小的屏幕调整排名的样式 */
@@ -107,5 +110,10 @@ onMounted(async () => {
   font-size: 0.9rem;
   color: #777;
   margin-bottom: 10px;
+}
+
+.row-equal-height {
+  display: flex;
+  align-items: stretch;  /* 使所有列高度一致 */
 }
 </style>
