@@ -1,4 +1,3 @@
-<!-- TODO: 用户头像 -->
 <template>
   <div>
     <mmCard title="修改个人信息" v-if="!showSuccessResult">
