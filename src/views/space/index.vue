@@ -10,7 +10,8 @@
           <span>粉丝: {{ userInfo.followers_count || '0' }}</span>
           <span>经验: {{ (userInfo.experience || '0').toFixed(1) }}</span>
         </div>
-        <v-btn @click="toggleFollow" class="follow-btn">{{ isFollowing ? '取消关注' : '关注' }}</v-btn>
+        <v-btn v-if="route.params.uid != sessionData.uid" @click="toggleFollow" class="user-btn">{{ isFollowing ? '取消关注' : '关注' }}</v-btn>
+        <v-btn v-else @click="goToSetting" class="user-btn">编辑资料</v-btn>
       </div>
     </mmCard>
     <VideoGrid :videos="videos" :hasMore="hasMoreVideos" @load-more="loadMore"/>
@@ -20,8 +21,9 @@
 <script setup>
 import axios from 'axios';
 import { ref, onMounted, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useUrlStore } from '@/store/urlStore';
+import { useUserStore } from '@/store/userStore';
 import useFormat from "@/composables/useFormat";
 import mmCard from '@/components/rzm/mmCard.vue';
 import VideoGrid from '@/components/video/VideoGrid.vue';
@@ -29,9 +31,12 @@ import avatar from '@/components/user/avatar.vue';
 
 // 初始化URL存储和路由
 const urlStore = useUrlStore();
+const userStore = useUserStore();
 const route = useRoute();
+const router = useRouter();
 const apiUrl = computed(() => urlStore.apiUrl);
 const cosUrl = computed(() => urlStore.cosUrl);
+const sessionData = computed(() => userStore.sessionData);
 const { formatTimestamp } = useFormat();
 
 // 定义相关的引用和变量
@@ -42,6 +47,11 @@ const currentAid = ref(1);
 let isLoading = false;
 const isAllDataLoaded = ref(false);
 const isFollowing = ref(false);
+
+// 前往编辑资料页面
+const goToSetting = () => {
+  router.replace('/user/setting')
+}
 
 // 切换关注状态的函数
 async function toggleFollow() {
@@ -144,7 +154,7 @@ loadMore();
   margin-right: 15px;
 }
 
-.follow-btn {
+.user-btn {
   margin-top: 10px;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-row>
-      <v-col v-for="user in users" :key="user.uid" xs="12" sm="6" md="4" lg="3">
+      <v-col v-for="user in users" :key="user.uid" xs="12" sm="6" md="4" lg="3" class="no-spacing-small-screens col-flex">
         <div class="card-wrapper">
           <span class="user-rank">#{{ user.rank }}</span>
           <mmvCard>
@@ -45,14 +45,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.user-col {
-  padding: 0 !important;
-}
-
-.card-wrapper {
-  position: relative;
-}
-
 .user-rank {
   position: absolute;
   top: -10px;
@@ -69,6 +61,9 @@ onMounted(async () => {
 @media (max-width: 600px) {
   .user-rank {
     padding: 4px 8px;
+  }
+  .no-spacing-small-screens{
+    padding: 4px  !important;
   }
 }
 
@@ -89,6 +84,12 @@ onMounted(async () => {
   font-weight: bold;
   font-size: 1.5rem;
   color: #333;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* 限制为2行 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 90%;
 }
 
 .user-uid {
@@ -107,5 +108,14 @@ onMounted(async () => {
   font-size: 0.9rem;
   color: #777;
   margin-bottom: 10px;
+}
+
+.card-wrapper {
+  position: relative;
+  height: 250px; /* 你可以根据实际需求调整这个值 */
+}
+
+.col-flex {
+  flex-basis: auto; /* 解决布局bug */
 }
 </style>

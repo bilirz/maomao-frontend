@@ -1,17 +1,17 @@
 <template>
   <div>
     <v-tabs v-model="tab" class="custom-tabs">
+      <v-tab value="new">新发布</v-tab>
       <v-tab value="random">随机</v-tab>
-      <v-tab value="history">历史</v-tab>
       <v-tab value="hot">热门</v-tab>
       <v-tab value="must">入站必刷</v-tab>
     </v-tabs>
     <v-window v-model="tab">
+      <v-window-item value="new">
+        <VideoGrid :videos="videos" :hasMore="hasMoreVideos" @load-more="() => loadMore('new')" />
+      </v-window-item>
       <v-window-item value="random">
         <VideoGrid :videos="videos" :hasMore="hasMoreVideos" @load-more="() => loadMore('random')" />
-      </v-window-item>
-      <v-window-item value="history">
-        <VideoGrid :videos="videos" :hasMore="hasMoreVideos" @load-more="() => loadMore('history')" />
       </v-window-item>
       <v-window-item value="hot">
         <VideoGrid :videos="videos" :hasMore="hasMoreVideos" @load-more="() => loadMore('hot')" />
@@ -51,7 +51,7 @@ function resetVideosData() {
   hasMoreVideos.value = true;
 }
 
-async function loadMore(type = 'random') {
+async function loadMore(type = 'new') {
   if (isLoading || isAllDataLoaded.value) return;
 
   isLoading = true;
@@ -60,13 +60,13 @@ async function loadMore(type = 'random') {
   const params = { start: currentAid.value, count: 8 };
 
   switch(type) {
+    case 'new':
+      endpoint = '/api/video/list';
+      params.sort_by = 'time';
+      break;
     case 'random':
       endpoint = '/api/video/list';
       params.sort_by = 'random';
-      break;
-    case 'history':
-      endpoint = '/api/video/list';
-      params.sort_by = 'time';
       break;
     case 'hot':
       endpoint = '/api/video/hot-list';
