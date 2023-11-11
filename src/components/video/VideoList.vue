@@ -8,101 +8,117 @@
     </v-tabs>
     <v-window v-model="tab">
       <v-window-item value="new">
-        <VideoGrid :videos="videos" :hasMore="hasMoreVideos" @load-more="() => loadMore('new')" />
+        <VideoGrid
+          :videos="videos"
+          :has-more="hasMoreVideos"
+          @load-more="() => loadMore('new')"
+        />
       </v-window-item>
       <v-window-item value="random">
-        <VideoGrid :videos="videos" :hasMore="hasMoreVideos" @load-more="() => loadMore('random')" />
+        <VideoGrid
+          :videos="videos"
+          :has-more="hasMoreVideos"
+          @load-more="() => loadMore('random')"
+        />
       </v-window-item>
       <v-window-item value="hot">
-        <VideoGrid :videos="videos" :hasMore="hasMoreVideos" @load-more="() => loadMore('hot')" />
+        <VideoGrid
+          :videos="videos"
+          :has-more="hasMoreVideos"
+          @load-more="() => loadMore('hot')"
+        />
       </v-window-item>
       <v-window-item value="must">
-        <VideoGrid :videos="videos" :hasMore="hasMoreVideos" @load-more="() => loadMore('must')" />
+        <VideoGrid
+          :videos="videos"
+          :has-more="hasMoreVideos"
+          @load-more="() => loadMore('must')"
+        />
       </v-window-item>
     </v-window>
   </div>
 </template>
 
 <script setup>
-import axios from 'axios';
-import { ref, computed, watch } from 'vue';
-import { useUrlStore } from '@/store/urlStore';
-import VideoGrid from './VideoGrid.vue';
+import axios from 'axios'
+import { ref, computed, watch } from 'vue'
+import { useUrlStore } from '@/store/urlStore'
+import VideoGrid from './VideoGrid.vue'
 
-const urlStore = useUrlStore();
-const apiUrl = computed(() => urlStore.apiUrl);
+const urlStore = useUrlStore()
+const apiUrl = computed(() => urlStore.apiUrl)
 
-const hasMoreVideos = ref(true);
-const videos = ref([]);
-const currentAid = ref(1);
-const tab = ref('home');
-let isLoading = false;
-const isAllDataLoaded = ref(false);
+const hasMoreVideos = ref(true)
+const videos = ref([])
+const currentAid = ref(1)
+const tab = ref('home')
+let isLoading = false
+const isAllDataLoaded = ref(false)
 
-watch(tab, (newVal, oldVal) => {
-  resetVideosData();
-  loadMore(newVal);
-});
+watch(tab, (newVal) => {
+  resetVideosData()
+  loadMore(newVal)
+})
 
 function resetVideosData() {
-  videos.value = [];
-  currentAid.value = 1;
-  isAllDataLoaded.value = false;
-  hasMoreVideos.value = true;
+  videos.value = []
+  currentAid.value = 1
+  isAllDataLoaded.value = false
+  hasMoreVideos.value = true
 }
 
 async function loadMore(type = 'new') {
-  if (isLoading || isAllDataLoaded.value) return;
+  if (isLoading || isAllDataLoaded.value) return
 
-  isLoading = true;
-  
-  let endpoint = '';
-  const params = { start: currentAid.value, count: 8 };
+  isLoading = true
 
-  switch(type) {
+  let endpoint = ''
+  const params = { start: currentAid.value, count: 8 }
+
+  switch (type) {
     case 'new':
-      endpoint = '/api/video/list';
-      params.sort_by = 'time';
-      break;
+      endpoint = '/api/video/list'
+      params.sort_by = 'time'
+      break
     case 'random':
-      endpoint = '/api/video/list';
-      params.sort_by = 'random';
-      break;
+      endpoint = '/api/video/list'
+      params.sort_by = 'random'
+      break
     case 'hot':
-      endpoint = '/api/video/hot-list';
-      params.within_two_weeks = true;
-      break;
+      endpoint = '/api/video/hot-list'
+      params.within_two_weeks = true
+      break
     case 'must':
-      endpoint = '/api/video/hot-list';
-      params.within_two_weeks = false;
-      break;
+      endpoint = '/api/video/hot-list'
+      params.within_two_weeks = false
+      break
     default:
-      console.error(`Unknown type: ${type}`);
-      isLoading = false;
-      return;
+      console.error(`Unknown type: ${type}`)
+      isLoading = false
+      return
   }
 
   try {
     const response = await axios.get(`${apiUrl.value}${endpoint}`, {
-      params: params
-    });
+      params: params,
+    })
     if (response.data.hasMore === false) {
-      hasMoreVideos.value = false;
+      hasMoreVideos.value = false
     }
-    videos.value.push(...response.data.data);
+    videos.value.push(...response.data.data)
     if (response.data.length < 8) {
-      isAllDataLoaded.value = true;
+      isAllDataLoaded.value = true
     } else {
-      currentAid.value += 8;
+      currentAid.value += 8
     }
   } catch (error) {
-    console.error("获取视频错误:", error);
+    console.error('获取视频错误:', error)
   } finally {
-    isLoading = false;
+    isLoading = false
   }
 }
 
-loadMore();
+loadMore()
 </script>
 
 <style scoped>
