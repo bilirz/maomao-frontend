@@ -64,6 +64,11 @@ const goToSetting = () => {
   router.replace('/user/setting')
 }
 
+// 前往编辑资料页面
+const goToSetting = () => {
+  router.replace('/user/setting')
+}
+
 // 切换关注状态的函数
 async function toggleFollow() {
   try {
