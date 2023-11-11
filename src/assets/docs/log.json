@@ -30,7 +30,8 @@
       "feature": ["加入了签到功能", "现在可以AI审核视频了"],
       "architecture": ["使用腾讯云对象存储"]
     }
-  },{
+  },
+  {
     "stage": "alpha",
     "version": "0.2.1",
     "dotColor": "green",
@@ -40,16 +41,25 @@
       "feature": ["使用上传视频分片技术，可以上传更大的视频了"],
       "fix": ["修复了已知bug"]
     }
-  },{
+  },
+  {
     "stage": "beta",
     "version": "1.0.0",
     "dotColor": "red",
     "date": "2023-10-28",
     "size": "large",
     "changes": {
-      "feature": ["加入了更好看的导航栏与侧边栏", "加入了主页留言板", "加入了开发日志"],
+      "feature": [
+        "加入了更好看的导航栏与侧边栏",
+        "加入了主页留言板",
+        "加入了开发日志"
+      ],
       "beautify": ["使用vuetify代替element-plus，全局美化"],
-      "architecture": ["使用pinia代替vuex", "使用TypeScript代替JavaScript", "使用vite代替webpack"]
+      "architecture": [
+        "使用pinia代替vuex",
+        "使用TypeScript代替JavaScript",
+        "使用vite代替webpack"
+      ]
     }
   },
   {
@@ -70,9 +80,21 @@
     "date": "2023-11-01",
     "size": "small",
     "changes": {
-      "feature": ["加入了喜闻乐见的排行榜功能", "添加了网站访问量统计公共页面", "首页视频选择新增随机、入站必刷页面"],
-      "beautify": ["美化了首页视频卡片与导航栏", "美化了加载页面", "美化了广告内容"],
-      "fix": ["修复了部分页面不能评论的bug", "修复了经验精度错误", "修复了竖屏竖屏电脑端显示问题"]
+      "feature": [
+        "加入了喜闻乐见的排行榜功能",
+        "添加了网站访问量统计公共页面",
+        "首页视频选择新增随机、入站必刷页面"
+      ],
+      "beautify": [
+        "美化了首页视频卡片与导航栏",
+        "美化了加载页面",
+        "美化了广告内容"
+      ],
+      "fix": [
+        "修复了部分页面不能评论的bug",
+        "修复了经验精度错误",
+        "修复了竖屏竖屏电脑端显示问题"
+      ]
     }
   },
   {
@@ -85,6 +107,17 @@
       "feature": ["通宵12小时完成了弹幕功能", "编辑资料页面回归"],
       "beautify": ["我会逐渐美化这个网站的"],
       "fix": ["修复了不能上传视频的bug", "修复了不能修改头像的bug"]
+    }
+  },{
+    "stage": "beta",
+    "version": "1.2.1",
+    "dotColor": "green",
+    "date": "2023-11-11",
+    "size": "small",
+    "changes": {
+      "beautify": ["加了一些细节"],
+      "fix": ["修复了一些BUG"],
+      "architecture": ["重构前后端代码，更符合标准"]
     }
   }
 ]

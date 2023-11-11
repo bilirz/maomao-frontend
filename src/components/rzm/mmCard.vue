@@ -4,15 +4,20 @@
       <span>{{ title }}</span>
     </v-card>
     <div class="rzm-card-line"></div>
-    <v-card flat style="padding: 15px;" class="custom-shadow">
+    <v-card flat style="padding: 15px" class="custom-shadow">
       <slot></slot>
     </v-card>
   </div>
 </template>
 <script>
-  export default {
-    props: ['title']
-  }
+export default {
+  props: {
+    title: {
+      type: String,
+      required: true,
+    },
+  },
+}
 </script>
 <style scoped>
 .rzm-card-title-card {
@@ -20,15 +25,15 @@
   padding: 3px;
 }
 
-.rzm-card-title-card span{
+.rzm-card-title-card span {
   padding: 10px;
   color: #61aefb;
-  font-weight:600;
+  font-weight: 600;
   font-size: 20px;
 }
 
-.rzm-card-line{
-  border:2px solid #61aefb;
+.rzm-card-line {
+  border: 2px solid #61aefb;
   border-radius: 5px;
   margin-top: 2px;
   margin-bottom: 2px;

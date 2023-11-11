@@ -1,6 +1,7 @@
-import { defineStore } from 'pinia';
-import axios from 'axios';
-import { useUrlStore } from './urlStore';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { defineStore } from 'pinia'
+import axios from 'axios'
+import { useUrlStore } from './urlStore'
 
 export const useUserStore = defineStore({
   id: 'userStore',
@@ -9,25 +10,27 @@ export const useUserStore = defineStore({
     sessionData: {
       signin: null,
       status: null,
-      isload: false
-    }
+      isload: false,
+    },
   }),
 
   actions: {
     async fetchSessionData() {
-      const urlStore = useUrlStore();
+      const urlStore = useUrlStore()
 
-      try {        
-        const response = await axios.get(`${urlStore.apiUrl}/api/user/session/get`);
-        
-        this.setSessionData(response.data);
+      try {
+        const response = await axios.get(
+          `${urlStore.apiUrl}/api/user/session/get`
+        )
+
+        this.setSessionData(response.data)
       } catch (error) {
-        console.error('获取session数据出错：', error);
+        console.error('获取session数据出错：', error)
       }
     },
 
     setSessionData(data: any) {
-      this.sessionData = data;
-    }
-  }
-});
+      this.sessionData = data
+    },
+  },
+})

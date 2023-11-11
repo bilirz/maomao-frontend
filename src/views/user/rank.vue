@@ -1,14 +1,22 @@
 <template>
   <div>
     <v-row>
-      <v-col v-for="user in users" :key="user.uid" xs="12" sm="6" md="4" lg="3" class="no-spacing-small-screens col-flex">
+      <v-col
+        v-for="user in users"
+        :key="user.uid"
+        xs="12"
+        sm="6"
+        md="4"
+        lg="3"
+        class="no-spacing-small-screens col-flex"
+      >
         <div class="card-wrapper">
           <span class="user-rank">#{{ user.rank }}</span>
           <mmvCard>
             <div class="user-info">
               <h3 class="user-name">{{ user.name }}</h3>
               <p class="user-uid">ID: {{ user.uid }}</p>
-              <p class="user-experience">{{ (user.experience).toFixed(1) }}点</p>
+              <p class="user-experience">{{ user.experience.toFixed(1) }}点</p>
               <p class="user-time">{{ formatTimestamp(user.time) }}</p>
             </div>
           </mmvCard>
@@ -20,36 +28,36 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import axios from 'axios';
-import { useUrlStore } from '@/store/urlStore';
-import mmvCard from '@/components/rzm/mmvCard.vue';
-import useFormat from '@/composables/useFormat';
+import { ref, onMounted, computed } from 'vue'
+import axios from 'axios'
+import { useUrlStore } from '@/store/urlStore'
+import mmvCard from '@/components/rzm/mmvCard.vue'
+import useFormat from '@/composables/useFormat'
 
-const urlStore = useUrlStore();
-const apiUrl = computed(() => urlStore.apiUrl);
-const { formatTimestamp } = useFormat();
-const users = ref([]); // 用于存储API返回的用户数据
+const urlStore = useUrlStore()
+const apiUrl = computed(() => urlStore.apiUrl)
+const { formatTimestamp } = useFormat()
+const users = ref([]) // 用于存储API返回的用户数据
 
 // 当组件加载时调用API
 onMounted(async () => {
   try {
-    const response = await axios.get(`${apiUrl.value}/api/user/rank`);
+    const response = await axios.get(`${apiUrl.value}/api/user/rank`)
     if (response.data) {
-      users.value = response.data;
+      users.value = response.data
     }
   } catch (error) {
-    console.error("获取用户列表错误:", error);
+    console.error('获取用户列表错误:', error)
   }
-});
+})
 </script>
 
 <style scoped>
 .user-rank {
   position: absolute;
   top: -10px;
-  left: 15%; 
-  background-color: #61aefb; 
+  left: 15%;
+  background-color: #61aefb;
   color: white;
   padding: 5px 10px;
   border-radius: 15px;
@@ -62,8 +70,8 @@ onMounted(async () => {
   .user-rank {
     padding: 4px 8px;
   }
-  .no-spacing-small-screens{
-    padding: 4px  !important;
+  .no-spacing-small-screens {
+    padding: 4px !important;
   }
 }
 
@@ -99,7 +107,7 @@ onMounted(async () => {
 }
 
 .user-experience {
-  color: #61aefb; 
+  color: #61aefb;
   font-weight: bold;
   margin-bottom: 10px;
 }
